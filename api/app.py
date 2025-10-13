@@ -1,7 +1,6 @@
 from flask import Flask, render_template_string
 import os
 
-# Create Flask app
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
 
@@ -21,13 +20,33 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         
         body {
             font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background: var(--gradient-bg);
             background-size: 400% 400%;
             animation: gradientShift 15s ease infinite;
             color: #ffffff;
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
+        }
+        
+        body.gradient-1 {
+            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+        }
+        
+        body.gradient-2 {
+            --gradient-bg: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 25%, #c44569 50%, #556270 75%, #4ecdc4 100%);
+        }
+        
+        body.gradient-3 {
+            --gradient-bg: linear-gradient(135deg, #11998e 0%, #38ef7d 25%, #fee140 50%, #fa709a 75%, #fbc2eb 100%);
+        }
+        
+        body.gradient-4 {
+            --gradient-bg: linear-gradient(135deg, #6a11cb 0%, #2575fc 25%, #00d2ff 50%, #3a7bd5 75%, #00d2ff 100%);
+        }
+        
+        body.gradient-5 {
+            --gradient-bg: linear-gradient(135deg, #f093fb 0%, #f5576c 25%, #4facfe 50%, #00f2fe 75%, #43e97b 100%);
         }
         
         body::before {
@@ -541,6 +560,29 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             font-weight: 800;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .drawer-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .drawer-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
         }
         
         .drawer-content {
@@ -566,6 +608,10 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
         }
         
+        .class-item:hover .class-delete {
+            opacity: 1;
+        }
+        
         .class-color {
             width: 28px;
             height: 28px;
@@ -577,6 +623,74 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         .class-item span {
             color: #ffffff;
             font-weight: 600;
+            flex: 1;
+        }
+        
+        .class-delete {
+            background: rgba(239, 68, 68, 0.8);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            opacity: 0;
+        }
+        
+        .class-delete:hover {
+            background: rgba(239, 68, 68, 1);
+            transform: scale(1.1);
+        }
+        
+        .gradient-picker {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        
+        .gradient-option {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .gradient-option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gradient-option.selected {
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.4);
+        }
+        
+        .gradient-option.g1 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        .gradient-option.g2 {
+            background: linear-gradient(135deg, #ff6b6b, #c44569);
+        }
+        
+        .gradient-option.g3 {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+        }
+        
+        .gradient-option.g4 {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+        }
+        
+        .gradient-option.g5 {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
         }
         
         .monthly-grid {
@@ -808,7 +922,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
     </style>
 </head>
-<body>
+<body class="gradient-1">
     <div class="app-bar">
         <div style="display: flex; align-items: center; gap: 16px;">
             <button class="menu-btn" onclick="toggleDrawer()">☰</button>
@@ -823,7 +937,10 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     </div>
     
     <div class="drawer" id="drawer">
-        <div class="drawer-header">Classes & Commitments</div>
+        <div class="drawer-header">
+            <span>Classes & Commitments</span>
+            <button class="drawer-close" onclick="toggleDrawer()">&times;</button>
+        </div>
         <div class="drawer-content">
             <button class="btn btn-primary" style="width: 100%; margin-bottom: 16px;" onclick="openAddClassModal()">+ Add New Class</button>
             <div id="classList"></div>
@@ -875,6 +992,10 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                         <option value="4">4</option>
                         <option value="5">5 - Lowest</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label>Deadline (optional)</label>
+                    <input type="datetime-local" id="eventDeadline">
                 </div>
                 <div class="form-group">
                     <label>Recurrence</label>
@@ -941,6 +1062,10 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Deadline (optional)</label>
+                    <input type="datetime-local" id="editEventDeadline">
+                </div>
+                <div class="form-group">
                     <label>Recurrence</label>
                     <select id="editEventRecurrence">
                         <option value="none">None</option>
@@ -979,6 +1104,16 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 <button class="close-btn" onclick="closeModal('settingsModal')">&times;</button>
             </div>
             <form id="settingsForm">
+                <div class="form-group">
+                    <label>Background Gradient</label>
+                    <div class="gradient-picker">
+                        <div class="gradient-option g1 selected" onclick="selectGradient(1)"></div>
+                        <div class="gradient-option g2" onclick="selectGradient(2)"></div>
+                        <div class="gradient-option g3" onclick="selectGradient(3)"></div>
+                        <div class="gradient-option g4" onclick="selectGradient(4)"></div>
+                        <div class="gradient-option g5" onclick="selectGradient(5)"></div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label>Break Length (minutes)</label>
                     <input type="number" id="settingsBreakLength" value="10" min="1">
@@ -1048,6 +1183,10 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     <label>What's your name?</label>
                     <input type="text" id="userNameInput" required>
                 </div>
+                <div class="form-group">
+                    <label>Do you have any accommodations? (e.g., extra time, note-taking)</label>
+                    <textarea id="accommodationsInput" rows="3" placeholder="Optional: Enter any accommodations you need..."></textarea>
+                </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Get Started</button>
                 </div>
@@ -1067,10 +1206,12 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             bufferBetweenEvents: 5,
             workChunkLength: 50,
             workStart: '16:00',
-            workEnd: '22:00'
+            workEnd: '22:00',
+            selectedGradient: 1
         };
         let durationHistory = {};
         let userName = '';
+        let accommodations = '';
         let currentEditingEventId = null;
         
         document.addEventListener('DOMContentLoaded', () => {
@@ -1078,6 +1219,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             if (userName) {
                 document.getElementById('nameModal').classList.remove('active');
             }
+            applyGradient(settings.selectedGradient);
             setTodayDate();
             updateView();
             updateClassDropdowns();
@@ -1086,6 +1228,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         document.getElementById('nameForm').addEventListener('submit', (e) => {
             e.preventDefault();
             userName = document.getElementById('userNameInput').value.trim() || 'My';
+            accommodations = document.getElementById('accommodationsInput').value.trim();
             document.getElementById('userName').textContent = userName;
             closeModal('nameModal');
             saveData();
@@ -1099,11 +1242,13 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 eventType: document.getElementById('eventType').value,
                 duration: parseInt(document.getElementById('eventDuration').value),
                 priority: parseInt(document.getElementById('eventPriority').value),
+                deadline: document.getElementById('eventDeadline').value || null,
                 recurrence: document.getElementById('eventRecurrence').value,
                 classTag: document.getElementById('eventClass').value || null,
                 eventDate: document.getElementById('eventDate').value,
                 startTime: document.getElementById('eventType').value === 'fixed' ? document.getElementById('eventStartTime').value : null,
-                color: getEventColor(document.getElementById('eventClass').value, parseInt(document.getElementById('eventPriority').value))
+                color: getEventColor(document.getElementById('eventClass').value, parseInt(document.getElementById('eventPriority').value)),
+                estimatedDuration: null
             };
             events.push(event);
             saveData();
@@ -1123,6 +1268,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     eventType: document.getElementById('editEventType').value,
                     duration: parseInt(document.getElementById('editEventDuration').value),
                     priority: parseInt(document.getElementById('editEventPriority').value),
+                    deadline: document.getElementById('editEventDeadline').value || null,
                     recurrence: document.getElementById('editEventRecurrence').value,
                     classTag: document.getElementById('editEventClass').value || null,
                     eventDate: document.getElementById('editEventDate').value,
@@ -1144,7 +1290,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 bufferBetweenEvents: parseInt(document.getElementById('settingsBuffer').value),
                 workChunkLength: parseInt(document.getElementById('settingsWorkChunk').value),
                 workStart: document.getElementById('settingsWorkStart').value,
-                workEnd: document.getElementById('settingsWorkEnd').value
+                workEnd: document.getElementById('settingsWorkEnd').value,
+                selectedGradient: settings.selectedGradient
             };
             saveData();
             closeModal('settingsModal');
@@ -1165,6 +1312,17 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             updateClassDropdowns();
             document.getElementById('addClassForm').reset();
         });
+        
+        function selectGradient(num) {
+            settings.selectedGradient = num;
+            applyGradient(num);
+            document.querySelectorAll('.gradient-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector('.gradient-option.g' + num).classList.add('selected');
+        }
+        
+        function applyGradient(num) {
+            document.body.className = 'gradient-' + num;
+        }
         
         function toggleDrawer() {
             document.getElementById('drawer').classList.toggle('open');
@@ -1192,7 +1350,20 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             document.getElementById('settingsWorkChunk').value = settings.workChunkLength;
             document.getElementById('settingsWorkStart').value = settings.workStart;
             document.getElementById('settingsWorkEnd').value = settings.workEnd;
+            
+            document.querySelectorAll('.gradient-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector('.gradient-option.g' + settings.selectedGradient).classList.add('selected');
+            
             document.getElementById('settingsModal').classList.add('active');
+        }
+        
+        function deleteClass(classId) {
+            if (confirm('Are you sure you want to delete this class?')) {
+                classes = classes.filter(c => c.id !== classId);
+                saveData();
+                updateClassList();
+                updateClassDropdowns();
+            }
         }
         
         function toggleFixedFields() {
@@ -1295,6 +1466,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 <div class="class-item">
                     <div class="class-color" style="background: ${c.color};"></div>
                     <span>${c.name}</span>
+                    <button class="class-delete" onclick="deleteClass(${c.id})">&times;</button>
                 </div>
             `).join('');
         }
@@ -1315,6 +1487,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             document.getElementById('editEventType').value = event.eventType;
             document.getElementById('editEventDuration').value = event.duration;
             document.getElementById('editEventPriority').value = event.priority;
+            document.getElementById('editEventDeadline').value = event.deadline || '';
             document.getElementById('editEventRecurrence').value = event.recurrence;
             document.getElementById('editEventClass').value = event.classTag || '';
             document.getElementById('editEventDate').value = event.eventDate;
@@ -1333,13 +1506,12 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
         
         function occursOnDay(event, day) {
-            const eventDate = new Date(event.eventDate);
-            
             if (event.eventType === 'fixed' && event.startTime) {
-                const fixedDate = new Date(event.eventDate + 'T' + event.startTime);
-                return isSameDay(fixedDate, day);
+                const eventDateTime = new Date(event.eventDate + 'T' + event.startTime);
+                return isSameDay(eventDateTime, day);
             }
             
+            const eventDate = new Date(event.eventDate);
             if (isSameDay(eventDate, day)) return true;
             
             if (event.recurrence === 'none') return false;
@@ -1352,25 +1524,128 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             return false;
         }
         
+        function autoPrioritize(tasks, day) {
+            const now = new Date();
+            tasks.forEach(task => {
+                if (task.deadline) {
+                    const deadline = new Date(task.deadline);
+                    const minutesLeft = (deadline - day) / (1000 * 60);
+                    const estimate = task.estimatedDuration || task.duration;
+                    
+                    let suggested = task.priority;
+                    
+                    if (minutesLeft <= 0) {
+                        suggested = Math.max(1, suggested - 2);
+                    } else if (minutesLeft <= 24 * 60) {
+                        suggested = Math.max(1, suggested - 1);
+                    } else if (minutesLeft <= 3 * 24 * 60) {
+                        suggested = Math.max(1, suggested - 0);
+                    }
+                    
+                    if (estimate >= 120 && minutesLeft <= 3 * 24 * 60) {
+                        suggested = Math.max(1, suggested - 1);
+                    }
+                    
+                    task.priority = suggested;
+                }
+            });
+            return tasks;
+        }
+        
         function generateScheduleForDay(day) {
             const schedule = [];
-            const dayEvents = events.filter(e => occursOnDay(e, day));
             
-            dayEvents.forEach(e => {
-                const item = {...e};
-                if (e.eventType === 'fixed' && e.startTime) {
-                    item.startTime = new Date(e.eventDate + 'T' + e.startTime);
-                    item.endTime = new Date(item.startTime.getTime() + e.duration * 60000);
+            const fixedEvents = events.filter(e => e.eventType === 'fixed' && occursOnDay(e, day));
+            fixedEvents.sort((a, b) => {
+                const aTime = new Date(a.eventDate + 'T' + a.startTime);
+                const bTime = new Date(b.eventDate + 'T' + b.startTime);
+                return aTime - bTime;
+            });
+            
+            let flexibleEvents = events.filter(e => e.eventType === 'flexible' && occursOnDay(e, day));
+            
+            if (flexibleEvents.length === 0) {
+                fixedEvents.forEach(fe => {
+                    const startTime = new Date(fe.eventDate + 'T' + fe.startTime);
+                    const endTime = new Date(startTime.getTime() + fe.duration * 60000);
+                    schedule.push({...fe, startTime, endTime});
+                });
+                return schedule;
+            }
+            
+            flexibleEvents = autoPrioritize(flexibleEvents.map(e => ({...e})), day);
+            flexibleEvents.sort((a, b) => a.priority - b.priority);
+            
+            const [workStartHour, workStartMin] = settings.workStart.split(':').map(Number);
+            const [workEndHour, workEndMin] = settings.workEnd.split(':').map(Number);
+            
+            let cursor = new Date(day);
+            cursor.setHours(workStartHour, workStartMin, 0, 0);
+            
+            const endTime = new Date(day);
+            endTime.setHours(workEndHour, workEndMin, 0, 0);
+            
+            fixedEvents.forEach(fe => {
+                const startTime = new Date(fe.eventDate + 'T' + fe.startTime);
+                const eventEndTime = new Date(startTime.getTime() + fe.duration * 60000);
+                schedule.push({...fe, startTime, endTime: eventEndTime});
+            });
+            
+            flexibleEvents.forEach(flex => {
+                if (cursor >= endTime) return;
+                
+                let slotStart = new Date(cursor);
+                
+                let hasConflict = true;
+                while (hasConflict && slotStart < endTime) {
+                    hasConflict = false;
+                    const slotEnd = new Date(slotStart.getTime() + flex.duration * 60000);
+                    
+                    for (let fixed of fixedEvents) {
+                        const fixedStart = new Date(fixed.eventDate + 'T' + fixed.startTime);
+                        const fixedEnd = new Date(fixedStart.getTime() + fixed.duration * 60000);
+                        
+                        if ((slotStart >= fixedStart && slotStart < fixedEnd) ||
+                            (slotEnd > fixedStart && slotEnd <= fixedEnd) ||
+                            (slotStart <= fixedStart && slotEnd >= fixedEnd)) {
+                            hasConflict = true;
+                            slotStart = new Date(fixedEnd.getTime() + settings.bufferBetweenEvents * 60000);
+                            break;
+                        }
+                    }
+                    
+                    if (!hasConflict && slotEnd <= endTime) {
+                        schedule.push({
+                            ...flex,
+                            startTime: new Date(slotStart),
+                            endTime: new Date(slotEnd)
+                        });
+                        
+                        const breakStart = new Date(slotEnd);
+                        const breakEnd = new Date(breakStart.getTime() + settings.breakLength * 60000);
+                        if (breakEnd <= endTime) {
+                            schedule.push({
+                                id: Date.now() + Math.random(),
+                                title: 'Break',
+                                eventType: 'break',
+                                duration: settings.breakLength,
+                                startTime: breakStart,
+                                endTime: breakEnd,
+                                color: 'linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9))'
+                            });
+                        }
+                        
+                        cursor = new Date(breakEnd.getTime() + settings.bufferBetweenEvents * 60000);
+                        break;
+                    } else if (hasConflict) {
+                        continue;
+                    } else {
+                        break;
+                    }
                 }
-                schedule.push(item);
             });
             
-            schedule.sort((a, b) => {
-                if (!a.startTime) return 1;
-                if (!b.startTime) return -1;
-                return a.startTime - b.startTime;
-            });
-            
+            schedule.sort((a, b) => a.startTime - b.startTime);
             return schedule;
         }
         
@@ -1396,7 +1671,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                         ${dayEvents.map(e => `
                             <div class="event-card ${e.eventType === 'break' ? 'break' : ''}" 
                                  style="background: ${e.color};" 
-                                 onclick="openEditEventModal(${e.id})">
+                                 onclick="${e.eventType !== 'break' ? `openEditEventModal(${e.id})` : ''}">
                                 <div class="event-title">${e.title}</div>
                                 ${e.startTime && e.endTime ? `
                                     <div class="event-time">${formatTime(e.startTime)} - ${formatTime(e.endTime)}</div>
@@ -1424,7 +1699,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     html += `
                         <div class="event-card ${e.eventType === 'break' ? 'break' : ''}" 
                              style="background: ${e.color}; margin-bottom: 12px;" 
-                             onclick="openEditEventModal(${e.id})">
+                             onclick="${e.eventType !== 'break' ? `openEditEventModal(${e.id})` : ''}">
                             <div class="event-title">${e.title}</div>
                             ${e.startTime && e.endTime ? `
                                 <div class="event-time">${formatTime(e.startTime)} - ${formatTime(e.endTime)}</div>
@@ -1494,6 +1769,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         function saveData() {
             const data = {
                 userName,
+                accommodations,
                 events,
                 classes,
                 settings,
@@ -1507,6 +1783,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             if (data) {
                 const parsed = JSON.parse(data);
                 userName = parsed.userName || '';
+                accommodations = parsed.accommodations || '';
                 events = parsed.events || [];
                 classes = parsed.classes || [];
                 settings = parsed.settings || settings;
