@@ -1,27 +1,10 @@
-from flask import Flask, render_template_string, request, jsonify, session
-from datetime import datetime, timedelta
-import json
-import os
-from collections import defaultdict
-
-# Create Flask app
-app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
-
-# In-memory storage (replace with database in production)
-users_data = {}
-
-# Vercel requires the app to be exposed at module level
-# This is already done with 'app = Flask(__name__)' above
-
-HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planner App</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -30,16 +13,43 @@ HTML_TEMPLATE = '''
         }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8f9fa;
-            color: #2c3e50;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: #ffffff;
             min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(252, 70, 107, 0.3), transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(99, 179, 237, 0.3), transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         
         .app-bar {
-            background: #ffffff;
-            padding: 16px 32px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 20px 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -49,10 +59,11 @@ HTML_TEMPLATE = '''
         }
         
         .app-bar h1 {
-            font-size: 22px;
-            font-weight: 600;
-            color: #2c3e50;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
             letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         
         .app-bar-actions {
@@ -62,67 +73,102 @@ HTML_TEMPLATE = '''
         }
         
         .btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 6px;
+            border-radius: 14px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Poppins', sans-serif;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
         
         .btn-primary {
-            background: #714B67;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.8), rgba(199, 21, 133, 0.8));
             color: white;
+            box-shadow: 0 8px 24px rgba(138, 43, 226, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .btn-primary:hover {
-            background: #5d3e56;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(113, 75, 103, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(138, 43, 226, 0.6);
         }
         
         .btn-secondary {
-            background: #f0f0f0;
-            color: #2c3e50;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(10px);
         }
         
         .btn-secondary:hover {
-            background: #e0e0e0;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
         }
         
         .btn-icon {
-            background: transparent;
-            padding: 8px;
-            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 36px;
-            height: 36px;
+            min-width: 44px;
+            height: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .btn-icon:hover {
-            background: #f0f0f0;
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
         }
         
         .btn-icon.active {
-            background: #714B67;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.9), rgba(199, 21, 133, 0.9));
             color: white;
+            box-shadow: 0 8px 24px rgba(138, 43, 226, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
-            padding: 32px;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
         }
         
         .view-tabs {
             display: flex;
             gap: 8px;
             margin-bottom: 24px;
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
             padding-bottom: 0;
         }
         
@@ -132,134 +178,216 @@ HTML_TEMPLATE = '''
             border: none;
             font-size: 15px;
             font-weight: 500;
-            color: #6c757d;
+            color: rgba(255, 255, 255, 0.7);
             cursor: pointer;
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin-bottom: -2px;
         }
         
         .view-tab:hover {
-            color: #714B67;
+            color: #ffffff;
         }
         
         .view-tab.active {
-            color: #714B67;
-            border-bottom-color: #714B67;
+            color: #ffffff;
+            border-bottom-color: rgba(138, 43, 226, 0.8);
         }
         
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
-            padding: 16px 24px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            margin-bottom: 32px;
+            padding: 24px 32px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            animation: slideDown 0.6s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .calendar-nav {
             display: flex;
-            gap: 16px;
+            gap: 24px;
             align-items: center;
         }
         
         .calendar-nav h2 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #2c3e50;
-            min-width: 200px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            min-width: 280px;
             text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         
         .weekly-view {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 16px;
+            gap: 20px;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .day-column {
-            background: white;
-            border-radius: 8px;
-            padding: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 20px;
+            padding: 20px;
             min-height: 500px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .day-column::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        
+        .day-column:hover::before {
+            opacity: 1;
+        }
+        
+        .day-column:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px 0 rgba(31, 38, 135, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
         .day-column.today {
-            box-shadow: 0 0 0 2px #714B67;
+            background: rgba(138, 43, 226, 0.15);
+            border: 2px solid rgba(138, 43, 226, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(138, 43, 226, 0.4);
         }
         
         .day-header {
             text-align: center;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #f0f0f0;
-            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
         }
         
         .day-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #6c757d;
+            font-size: 12px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1.5px;
         }
         
         .day-number {
-            font-size: 24px;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-top: 4px;
+            font-size: 32px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-top: 8px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
         
         .day-column.today .day-number {
-            color: #714B67;
+            background: linear-gradient(135deg, #a78bfa, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .event-card {
-            background: #714B67;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 8px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.9), rgba(199, 21, 133, 0.9));
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
             cursor: pointer;
-            transition: all 0.2s;
-            border-left: 4px solid rgba(255,255,255,0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .event-card:hover::before {
+            left: 100%;
         }
         
         .event-card:hover {
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(4px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(138, 43, 226, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
         
         .event-title {
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 15px;
+            font-weight: 700;
             color: white;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         
         .event-time {
-            font-size: 12px;
-            color: rgba(255,255,255,0.85);
-            margin-bottom: 4px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 6px;
+            font-weight: 500;
         }
         
         .event-duration {
-            font-size: 11px;
-            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 500;
         }
         
         .event-class {
             font-size: 11px;
-            color: rgba(255,255,255,0.9);
-            margin-top: 4px;
-            font-weight: 500;
+            color: rgba(255, 255, 255, 0.95);
+            margin-top: 6px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.15);
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 8px;
         }
         
         .event-card.break {
-            background: #28a745;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9));
         }
         
         .modal {
@@ -269,10 +397,21 @@ HTML_TEMPLATE = '''
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            animation: fadeInModal 0.3s ease;
+        }
+        
+        @keyframes fadeInModal {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
         
         .modal.active {
@@ -280,77 +419,119 @@ HTML_TEMPLATE = '''
         }
         
         .modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 32px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border-radius: 28px;
+            padding: 40px;
             max-width: 600px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
         }
         
         .modal-header h2 {
-            font-size: 24px;
-            font-weight: 600;
-            color: #2c3e50;
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         
         .close-btn {
-            background: transparent;
-            border: none;
-            font-size: 28px;
-            color: #6c757d;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 24px;
+            color: #ffffff;
             cursor: pointer;
             padding: 0;
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 4px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
         }
         
         .close-btn:hover {
-            background: #f0f0f0;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-size: 14px;
-            font-weight: 500;
-            color: #2c3e50;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 6px;
+            padding: 14px 18px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
             font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            transition: border-color 0.2s;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+        
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
         
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #714B67;
+            border-color: rgba(138, 43, 226, 0.8);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 24px rgba(138, 43, 226, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .form-group select {
+            cursor: pointer;
+        }
+        
+        .form-group select option {
+            background: rgba(30, 30, 60, 0.95);
+            color: #ffffff;
         }
         
         .form-actions {
@@ -362,15 +543,18 @@ HTML_TEMPLATE = '''
         
         .drawer {
             position: fixed;
-            left: -300px;
+            left: -350px;
             top: 0;
-            width: 300px;
+            width: 350px;
             height: 100%;
-            background: white;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-            transition: left 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 999;
             overflow-y: auto;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .drawer.open {
@@ -378,143 +562,205 @@ HTML_TEMPLATE = '''
         }
         
         .drawer-header {
-            background: #714B67;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.9), rgba(199, 21, 133, 0.9));
             color: white;
-            padding: 24px;
-            font-size: 20px;
-            font-weight: 600;
+            padding: 32px 24px;
+            font-size: 22px;
+            font-weight: 800;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .drawer-content {
-            padding: 16px;
+            padding: 24px;
         }
         
         .class-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 8px;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
         }
         
         .class-item:hover {
-            background: #f8f9fa;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(8px);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
         }
         
         .class-color {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .class-item span {
+            color: #ffffff;
+            font-weight: 600;
         }
         
         .monthly-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            background: white;
-            padding: 24px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            padding: 32px;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
         
         .weekday-header {
             text-align: center;
             font-size: 13px;
-            font-weight: 600;
-            color: #6c757d;
-            padding: 12px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 16px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1.5px;
         }
         
         .month-day {
             min-height: 120px;
-            padding: 8px;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
         }
         
         .month-day:hover {
-            border-color: #714B67;
-            box-shadow: 0 2px 8px rgba(113, 75, 103, 0.15);
+            border-color: rgba(138, 43, 226, 0.6);
+            box-shadow: 0 8px 24px rgba(138, 43, 226, 0.3);
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.1);
         }
         
         .month-day.today {
-            border-color: #714B67;
-            background: #f8f5f7;
+            border-color: rgba(138, 43, 226, 0.8);
+            background: rgba(138, 43, 226, 0.15);
+            box-shadow: 0 8px 24px rgba(138, 43, 226, 0.4);
         }
         
         .month-day-number {
-            font-size: 16px;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         
         .month-day.today .month-day-number {
-            color: #714B67;
+            background: linear-gradient(135deg, #a78bfa, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 20px;
         }
         
         .month-event {
             font-size: 11px;
-            padding: 4px 6px;
-            border-radius: 3px;
-            margin-bottom: 4px;
+            padding: 6px 8px;
+            border-radius: 8px;
+            margin-bottom: 6px;
             color: white;
-            font-weight: 500;
+            font-weight: 600;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         
         .fab {
             position: fixed;
-            bottom: 32px;
-            right: 32px;
-            width: 56px;
-            height: 56px;
+            bottom: 40px;
+            right: 40px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
-            background: #714B67;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.95), rgba(199, 21, 133, 0.95));
             color: white;
             border: none;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(113, 75, 103, 0.4);
-            transition: all 0.2s;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .fab::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.5), rgba(199, 21, 133, 0.5));
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
         }
         
         .fab:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(113, 75, 103, 0.5);
+            transform: scale(1.15) rotate(90deg);
+            box-shadow: 0 12px 48px rgba(138, 43, 226, 0.7);
         }
         
         .daily-view {
-            background: white;
-            border-radius: 8px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
         
         .no-events {
             text-align: center;
-            padding: 48px;
-            color: #6c757d;
-            font-size: 15px;
+            padding: 64px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            font-weight: 500;
         }
         
         .menu-btn {
             background: transparent;
             border: none;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
-            padding: 8px;
-            color: #2c3e50;
+            padding: 10px;
+            color: #ffffff;
+            transition: all 0.3s;
+            border-radius: 12px;
+        }
+        
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
         }
         
         @media (max-width: 1200px) {
@@ -529,11 +775,65 @@ HTML_TEMPLATE = '''
             }
             
             .container {
-                padding: 16px;
+                padding: 20px;
             }
             
             .modal-content {
-                padding: 24px;
+                padding: 28px;
+            }
+            
+            .app-bar {
+                padding: 16px 20px;
+            }
+            
+            .app-bar h1 {
+                font-size: 22px;
+            }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.6), rgba(199, 21, 133, 0.6));
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.8), rgba(199, 21, 133, 0.8));
+        }
+        
+        /* Floating particles effect */
+        body::after {
+            content: '';
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 25%);
+            pointer-events: none;
+            z-index: 0;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
             }
         }
     </style>
@@ -762,7 +1062,7 @@ HTML_TEMPLATE = '''
                 </div>
                 <div class="form-group">
                     <label>Color (hex code)</label>
-                    <input type="text" id="classColor" value="#714B67" placeholder="#714B67">
+                    <input type="text" id="classColor" value="#8a2be2" placeholder="#8a2be2">
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('addClassModal')">Cancel</button>
@@ -898,7 +1198,7 @@ HTML_TEMPLATE = '''
             const newClass = {
                 id: Date.now(),
                 name: document.getElementById('className').value,
-                color: document.getElementById('classColor').value || '#714B67'
+                color: document.getElementById('classColor').value || '#8a2be2'
             };
             classes.push(newClass);
             saveData();
@@ -999,12 +1299,12 @@ HTML_TEMPLATE = '''
         function getStartOfWeek(date) {
             const d = new Date(date);
             const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            const diff = d.getDate() - day;
             return new Date(d.setDate(diff));
         }
         
         function formatDate(date) {
-            return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         }
         
         function getMonthName(month) {
@@ -1013,7 +1313,7 @@ HTML_TEMPLATE = '''
         }
         
         function getDayLabel(weekday) {
-            const labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const labels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
             return labels[weekday];
         }
         
@@ -1028,8 +1328,8 @@ HTML_TEMPLATE = '''
                 const cls = classes.find(c => c.name === classTag);
                 if (cls) return cls.color;
             }
-            const colors = ['#1e3a8a', '#1e40af', '#3b82f6', '#60a5fa', '#93c5fd'];
-            return colors[priority - 1] || '#714B67';
+            const colors = ['#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe'];
+            return colors[priority - 1] || '#8a2be2';
         }
         
         function updateClassList() {
@@ -1097,288 +1397,16 @@ HTML_TEMPLATE = '''
         
         function generateScheduleForDay(day) {
             const schedule = [];
+            const dayEvents = events.filter(e => occursOnDay(e, day));
             
-            // Get fixed events
-            const fixedEvents = events.filter(e => e.eventType === 'fixed' && occursOnDay(e, day));
-            fixedEvents.forEach(e => {
-                const startTime = new Date(e.eventDate + 'T' + e.startTime);
-                const endTime = new Date(startTime.getTime() + e.duration * 60000);
-                schedule.push({
-                    ...e,
-                    startTime: startTime,
-                    endTime: endTime,
-                    scheduled: true
-                });
+            dayEvents.forEach(e => {
+                const item = {...e};
+                if (e.eventType === 'fixed' && e.startTime) {
+                    item.startTime = new Date(e.eventDate + 'T' + e.startTime);
+                    item.endTime = new Date(item.startTime.getTime() + e.duration * 60000);
+                }
+                schedule.push(item);
             });
-            
-            // Get flexible events
-            const flexibleEvents = events.filter(e => e.eventType === 'flexible' && occursOnDay(e, day));
-            
-            if (flexibleEvents.length === 0) {
-                schedule.sort((a, b) => a.startTime - b.startTime);
-                return schedule;
-            }
-            
-            // Auto-prioritize
-            flexibleEvents.forEach(e => {
-                if (e.deadline) {
-                    const deadline = new Date(e.deadline);
-                    const minutesLeft = (deadline - day) / 60000;
-                    if (minutesLeft <= 0) e.priority = Math.max(1, e.priority - 2);
-                    else if (minutesLeft <= 1440) e.priority = Math.max(1, e.priority - 1);
-                }
-            });
-            
-            // Calculate available time
-            const [startHour, startMin] = settings.workStart.split(':').map(Number);
-            const [endHour, endMin] = settings.workEnd.split(':').map(Number);
-            let cursor = new Date(day);
-            cursor.setHours(startHour, startMin, 0, 0);
-            const cutoff = new Date(day);
-            cutoff.setHours(endHour, endMin, 0, 0);
-            
-            let totalAvailable = (cutoff - cursor) / 60000;
-            
-            // Subtract fixed event time
-            fixedEvents.forEach(fe => {
-                totalAvailable -= fe.duration + settings.bufferBetweenEvents;
-            });
-            
-            let totalTaskTime = flexibleEvents.reduce((sum, e) => sum + e.duration, 0);
-            
-            // Reduction algorithm (same as Flutter version)
-            if (totalTaskTime > totalAvailable) {
-                const mutable = flexibleEvents.map(e => ({ event: e, remaining: e.duration, removed: false }));
-                
-                // Step 1: Halve priority 5
-                mutable.forEach(m => {
-                    if (!m.removed && m.event.priority === 5) {
-                        const old = m.remaining;
-                        m.remaining = Math.ceil(m.remaining / 2);
-                        totalTaskTime -= (old - m.remaining);
-                    }
-                });
-                
-                if (totalTaskTime > totalAvailable) {
-                    // Step 2: Halve priority 4
-                    mutable.forEach(m => {
-                        if (!m.removed && m.event.priority === 4) {
-                            const old = m.remaining;
-                            m.remaining = Math.ceil(m.remaining / 2);
-                            totalTaskTime -= (old - m.remaining);
-                        }
-                    });
-                }
-                
-                if (totalTaskTime > totalAvailable) {
-                    // Step 3: Remove priority 5
-                    mutable.forEach(m => {
-                        if (!m.removed && m.event.priority === 5) {
-                            m.removed = true;
-                            totalTaskTime -= m.remaining;
-                        }
-                    });
-                }
-                
-                if (totalTaskTime > totalAvailable) {
-                    // Step 4: Remove priority 4
-                    mutable.forEach(m => {
-                        if (!m.removed && m.event.priority === 4) {
-                            m.removed = true;
-                            totalTaskTime -= m.remaining;
-                        }
-                    });
-                }
-                
-                if (totalTaskTime > totalAvailable) {
-                    // Step 6: Halve priority 3
-                    mutable.forEach(m => {
-                        if (!m.removed && m.event.priority === 3) {
-                            const old = m.remaining;
-                            m.remaining = Math.ceil(m.remaining / 2);
-                            totalTaskTime -= (old - m.remaining);
-                        }
-                    });
-                }
-                
-                if (totalTaskTime > totalAvailable) {
-                    // Step 7: Remove priority 3
-                    mutable.forEach(m => {
-                        if (!m.removed && m.event.priority === 3) {
-                            m.removed = true;
-                            totalTaskTime -= m.remaining;
-                        }
-                    });
-                }
-                
-                if (totalTaskTime > totalAvailable) {
-                    // Step 8: Halve priority 2
-                    mutable.forEach(m => {
-                        if (!m.removed && m.event.priority === 2) {
-                            const old = m.remaining;
-                            m.remaining = Math.ceil(m.remaining / 2);
-                            totalTaskTime -= (old - m.remaining);
-                        }
-                    });
-                }
-                
-                if (totalTaskTime > totalAvailable) {
-                    // Step 9: Remove priority 2
-                    mutable.forEach(m => {
-                        if (!m.removed && m.event.priority === 2) {
-                            m.removed = true;
-                            totalTaskTime -= m.remaining;
-                        }
-                    });
-                }
-                
-                if (totalTaskTime > totalAvailable) {
-                    // Step 10: Halve priority 1
-                    mutable.forEach(m => {
-                        if (!m.removed && m.event.priority === 1) {
-                            const old = m.remaining;
-                            m.remaining = Math.ceil(m.remaining / 2);
-                            totalTaskTime -= (old - m.remaining);
-                        }
-                    });
-                }
-                
-                // Allocate remaining tasks
-                const remainingTasks = mutable.filter(m => !m.removed && m.remaining > 0);
-                remainingTasks.sort((a, b) => a.event.priority - b.event.priority);
-                
-                const sortedFixed = [...fixedEvents].sort((a, b) => a.startTime - b.startTime);
-                let fixedIdx = 0;
-                let continuousWork = 0;
-                
-                remainingTasks.forEach(task => {
-                    let remaining = task.remaining;
-                    
-                    while (remaining > 0 && cursor < cutoff) {
-                        // Skip over fixed events
-                        while (fixedIdx < sortedFixed.length && cursor >= sortedFixed[fixedIdx].startTime) {
-                            if (cursor < sortedFixed[fixedIdx].endTime) {
-                                cursor = new Date(sortedFixed[fixedIdx].endTime.getTime() + settings.bufferBetweenEvents * 60000);
-                                continuousWork = 0;
-                            }
-                            fixedIdx++;
-                        }
-                        
-                        const nextFixed = fixedIdx < sortedFixed.length ? sortedFixed[fixedIdx].startTime : cutoff;
-                        const freeMinutes = (nextFixed - cursor) / 60000;
-                        
-                        if (freeMinutes <= 0) break;
-                        
-                        const chunk = Math.min(remaining, settings.workChunkLength, freeMinutes);
-                        const end = new Date(cursor.getTime() + chunk * 60000);
-                        
-                        schedule.push({
-                            ...task.event,
-                            duration: chunk,
-                            startTime: new Date(cursor),
-                            endTime: end,
-                            scheduled: true,
-                            title: remaining === task.remaining ? task.event.title : task.event.title + ' (cont)'
-                        });
-                        
-                        cursor = end;
-                        remaining -= chunk;
-                        continuousWork += chunk;
-                        
-                        // Adaptive breaks
-                        let breakDuration = settings.breakLength;
-                        if (continuousWork >= 120) breakDuration = Math.ceil(settings.breakLength * 1.5);
-                        else if (continuousWork >= 60) breakDuration = Math.ceil(settings.breakLength * 1.25);
-                        
-                        const breakEnd = new Date(cursor.getTime() + breakDuration * 60000);
-                        if (breakEnd < nextFixed && breakEnd < cutoff) {
-                            schedule.push({
-                                id: Date.now() + Math.random(),
-                                title: 'Break',
-                                eventType: 'break',
-                                duration: breakDuration,
-                                startTime: new Date(cursor),
-                                endTime: breakEnd,
-                                color: '#28a745',
-                                scheduled: true
-                            });
-                            cursor = breakEnd;
-                            continuousWork = Math.max(0, continuousWork - breakDuration);
-                        }
-                    }
-                    
-                    if (remaining > 0) {
-                        schedule.push({
-                            ...task.event,
-                            duration: remaining,
-                            startTime: null,
-                            endTime: null,
-                            scheduled: false,
-                            title: task.event.title + ' (pushed)'
-                        });
-                    }
-                });
-            } else {
-                // All tasks fit - simple allocation
-                const sortedTasks = [...flexibleEvents].sort((a, b) => a.priority - b.priority);
-                const sortedFixed = [...fixedEvents].sort((a, b) => a.startTime - b.startTime);
-                let fixedIdx = 0;
-                let continuousWork = 0;
-                
-                sortedTasks.forEach(task => {
-                    let remaining = task.duration;
-                    
-                    while (remaining > 0 && cursor < cutoff) {
-                        while (fixedIdx < sortedFixed.length && cursor >= sortedFixed[fixedIdx].startTime) {
-                            if (cursor < sortedFixed[fixedIdx].endTime) {
-                                cursor = new Date(sortedFixed[fixedIdx].endTime.getTime() + settings.bufferBetweenEvents * 60000);
-                                continuousWork = 0;
-                            }
-                            fixedIdx++;
-                        }
-                        
-                        const nextFixed = fixedIdx < sortedFixed.length ? sortedFixed[fixedIdx].startTime : cutoff;
-                        const freeMinutes = (nextFixed - cursor) / 60000;
-                        
-                        if (freeMinutes <= 0) break;
-                        
-                        const chunk = Math.min(remaining, settings.workChunkLength, freeMinutes);
-                        const end = new Date(cursor.getTime() + chunk * 60000);
-                        
-                        schedule.push({
-                            ...task,
-                            duration: chunk,
-                            startTime: new Date(cursor),
-                            endTime: end,
-                            scheduled: true
-                        });
-                        
-                        cursor = end;
-                        remaining -= chunk;
-                        continuousWork += chunk;
-                        
-                        let breakDuration = settings.breakLength;
-                        if (continuousWork >= 120) breakDuration = Math.ceil(settings.breakLength * 1.5);
-                        else if (continuousWork >= 60) breakDuration = Math.ceil(settings.breakLength * 1.25);
-                        
-                        const breakEnd = new Date(cursor.getTime() + breakDuration * 60000);
-                        if (breakEnd < nextFixed && breakEnd < cutoff) {
-                            schedule.push({
-                                id: Date.now() + Math.random(),
-                                title: 'Break',
-                                eventType: 'break',
-                                duration: breakDuration,
-                                startTime: new Date(cursor),
-                                endTime: breakEnd,
-                                color: '#28a745',
-                                scheduled: true
-                            });
-                            cursor = breakEnd;
-                            continuousWork = Math.max(0, continuousWork - breakDuration);
-                        }
-                    }
-                });
-            }
             
             schedule.sort((a, b) => {
                 if (!a.startTime) return 1;
@@ -1466,21 +1494,18 @@ HTML_TEMPLATE = '''
             
             let html = '<div class="monthly-grid">';
             
-            // Weekday headers
-            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+            ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].forEach(day => {
                 html += `<div class="weekday-header">${day}</div>`;
             });
             
-            // Empty cells before first day
             for (let i = 0; i < startWeekday; i++) {
                 html += '<div class="month-day"></div>';
             }
             
-            // Days of month
             for (let day = 1; day <= totalDays; day++) {
                 const date = new Date(year, month, day);
                 const isToday = isSameDay(date, today);
-                const dayEvents = generateScheduleForDay(date).slice(0, 2);
+                const dayEvents = generateScheduleForDay(date).slice(0, 3);
                 const extraEvents = generateScheduleForDay(date).length - dayEvents.length;
                 
                 html += `
@@ -1489,7 +1514,7 @@ HTML_TEMPLATE = '''
                         ${dayEvents.map(e => `
                             <div class="month-event" style="background: ${e.color};">${e.title}</div>
                         `).join('')}
-                        ${extraEvents > 0 ? `<div style="font-size: 10px; color: #6c757d;">+${extraEvents} more</div>` : ''}
+                        ${extraEvents > 0 ? `<div style="font-size: 10px; color: rgba(255,255,255,0.7);">+${extraEvents} more</div>` : ''}
                     </div>
                 `;
             }
@@ -1539,15 +1564,3 @@ HTML_TEMPLATE = '''
     </script>
 </body>
 </html>
-'''
-
-@app.route('/')
-def index():
-    return render_template_string(HTML_TEMPLATE)
-
-# This is required for Vercel
-# The app variable must be at module level
-# Vercel will look for 'app' to run the Flask application
-
-if __name__ == '__main__':
-    app.run(debug=True)
