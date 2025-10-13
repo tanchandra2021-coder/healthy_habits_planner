@@ -4,11 +4,15 @@ import json
 import os
 from collections import defaultdict
 
+# Create Flask app
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
 
 # In-memory storage (replace with database in production)
 users_data = {}
+
+# Vercel requires the app to be exposed at module level
+# This is already done with 'app = Flask(__name__)' above
 
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
@@ -1541,7 +1545,9 @@ HTML_TEMPLATE = '''
 def index():
     return render_template_string(HTML_TEMPLATE)
 
+# This is required for Vercel
+# The app variable must be at module level
+# Vercel will look for 'app' to run the Flask application
+
 if __name__ == '__main__':
     app.run(debug=True)
-
-
