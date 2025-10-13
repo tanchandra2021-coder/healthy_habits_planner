@@ -21,34 +21,72 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         body {
             font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--gradient-bg);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            color: #ffffff;
+            color: var(--text-color);
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
+            transition: background 0.3s ease;
         }
         
+        /* White theme */
         body.gradient-1 {
-            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            --gradient-bg: #ffffff;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --card-bg: rgba(249, 250, 251, 0.95);
+            --card-border: rgba(229, 231, 235, 0.8);
+            --hover-bg: rgba(243, 244, 246, 0.95);
+            --accent-color: #8b5cf6;
+            --accent-hover: #7c3aed;
         }
         
+        /* Dark theme */
         body.gradient-2 {
-            --gradient-bg: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 25%, #c44569 50%, #556270 75%, #4ecdc4 100%);
+            --gradient-bg: #0f172a;
+            --text-color: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --card-border: rgba(51, 65, 85, 0.8);
+            --hover-bg: rgba(51, 65, 85, 0.95);
+            --accent-color: #a78bfa;
+            --accent-hover: #8b5cf6;
         }
         
+        /* Light grey theme */
         body.gradient-3 {
-            --gradient-bg: linear-gradient(135deg, #11998e 0%, #38ef7d 25%, #fee140 50%, #fa709a 75%, #fbc2eb 100%);
+            --gradient-bg: #f3f4f6;
+            --text-color: #111827;
+            --text-secondary: #6b7280;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(229, 231, 235, 0.8);
+            --hover-bg: rgba(249, 250, 251, 0.95);
+            --accent-color: #8b5cf6;
+            --accent-hover: #7c3aed;
         }
         
+        /* Warm pastel theme */
         body.gradient-4 {
-            --gradient-bg: linear-gradient(135deg, #6a11cb 0%, #2575fc 25%, #00d2ff 50%, #3a7bd5 75%, #00d2ff 100%);
+            --gradient-bg: linear-gradient(135deg, #fef3f2 0%, #fef7f6 50%, #f0f9ff 100%);
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(254, 226, 226, 0.6);
+            --hover-bg: rgba(254, 243, 242, 0.95);
+            --accent-color: #f87171;
+            --accent-hover: #ef4444;
         }
         
+        /* Fresh pastel theme */
         body.gradient-5 {
-            --gradient-bg: linear-gradient(135deg, #f093fb 0%, #f5576c 25%, #4facfe 50%, #00f2fe 75%, #43e97b 100%);
+            --gradient-bg: linear-gradient(135deg, #f0fdf4 0%, #f7fee7 50%, #fef3c7 100%);
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(220, 252, 231, 0.6);
+            --hover-bg: rgba(240, 253, 244, 0.95);
+            --accent-color: #10b981;
+            --accent-hover: #059669;
         }
-        
         body::before {
             content: '';
             position: fixed;
