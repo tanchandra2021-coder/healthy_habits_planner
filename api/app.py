@@ -1,4 +1,733 @@
-<!DOCTYPE html>
+</style>
+</head>
+<body>
+    <div class="app-bar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <button class="menu-btn" onclick="toggleDrawer()">☰</button>
+            <h1><span id="userName">My</span>'s Planner</h1>
+        </div>
+        <div class="app-bar-actions">
+            <button class="btn-icon" onclick="changeView('weekly')" id="weeklyBtn">📅</button>
+            <button class="btn-icon" onclick="changeView('daily')" id="dailyBtn">📆</button>
+            <button class="btn-icon" onclick="changeView('monthly')" id="monthlyBtn">🗓️</button>
+            <button class="btn-secondary btn" onclick="openSettings()">⚙️ Settings</button>
+        </div>
+    </div>
+    
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">Classes & Commitments</div>
+        <div class="drawer-content">
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 16px;" onclick="openAddClassModal()">+ Add New Class</button>
+            <div id="classList"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="calendar-header">
+            <div class="calendar-nav">
+                <button class="btn-icon" onclick="navigateDate(-1)">◀</button>
+                <h2 id="currentDateLabel"></h2>
+                <button class="btn-icon" onclick="navigateDate(1)">▶</button>
+            </div>
+        </div>
+        
+        <div id="calendarView"></div>
+    </div>
+    
+    <button class="fab" onclick="openAddEventModal()">+</button>
+    
+    <div class="modal" id="addEventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Event</h2>
+                <button class="close-btn" onclick="closeModal('addEventModal')">&times;</button>
+            </div>
+            <form id="addEventForm">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="eventTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Event Type</label>
+                    <select id="eventType" onchange="toggleFixedFields()">
+                        <option value="flexible">Flexible</option>
+                        <option value="fixed">Fixed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Duration (minutes)</label>
+                    <input type="number" id="eventDuration" value="30" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Priority (1=highest, 5=lowest)</label>
+                    <select id="eventPriority">
+                        <option value="1">1 - Highest</option>
+                        <option value="2">2</option>
+                        <option value="3" selected>3 - Medium</option>
+                        <option value="4">4</option>
+                        <option value="5">5 - Lowest</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Recurrence</label>
+                    <select id="eventRecurrence">
+                        <option value="none">None</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Class / Commitment (optional)</label>
+                    <select id="eventClass">
+                        <option value="">None</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Event Date</label>
+                    <input type="date" id="eventDate" required>
+                </div>
+                <div class="form-group" id="fixedTimeGroup" style="display: none;">
+                    <label>Start Time (for fixed events)</label>
+                    <input type="time" id="eventStartTime">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addEventModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="editEventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Event</h2>
+                <button class="close-btn" onclick="closeModal('editEventModal')">&times;</button>
+            </div>
+            <form id="editEventForm">
+                <input type="hidden" id="editEventId">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="editEventTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Event Type</label>
+                    <select id="editEventType" onchange="toggleEditFixedFields()">
+                        <option value="flexible">Flexible</option>
+                        <option value="fixed">Fixed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Duration (minutes)</label>
+                    <input type="number" id="editEventDuration" value="30" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Priority (1=highest, 5=lowest)</label>
+                    <select id="editEventPriority">
+                        <option value="1">1 - Highest</option>
+                        <option value="2">2</option>
+                        <option value="3">3 - Medium</option>
+                        <option value="4">4</option>
+                        <option value="5">5 - Lowest</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Recurrence</label>
+                    <select id="editEventRecurrence">
+                        <option value="none">None</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Class / Commitment (optional)</label>
+                    <select id="editEventClass">
+                        <option value="">None</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Event Date</label>
+                    <input type="date" id="editEventDate" required>
+                </div>
+                <div class="form-group" id="editFixedTimeGroup" style="display: none;">
+                    <label>Start Time (for fixed events)</label>
+                    <input type="time" id="editEventStartTime">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="deleteEvent()">Delete</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editEventModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-btn" onclick="closeModal('settingsModal')">&times;</button>
+            </div>
+            <form id="settingsForm">
+                <div class="form-group">
+                    <label>Break Length (minutes)</label>
+                    <input type="number" id="settingsBreakLength" value="10" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Shower Length (minutes)</label>
+                    <input type="number" id="settingsShowerLength" value="15" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Meal Length (minutes)</label>
+                    <input type="number" id="settingsMealLength" value="30" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Buffer Between Events (minutes)</label>
+                    <input type="number" id="settingsBuffer" value="5" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Work Chunk Length (minutes)</label>
+                    <input type="number" id="settingsWorkChunk" value="50" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Work Start Time</label>
+                    <input type="time" id="settingsWorkStart" value="16:00">
+                </div>
+                <div class="form-group">
+                    <label>Work End Time</label>
+                    <input type="time" id="settingsWorkEnd" value="22:00">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('settingsModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="addClassModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Class / Commitment</h2>
+                <button class="close-btn" onclick="closeModal('addClassModal')">&times;</button>
+            </div>
+            <form id="addClassForm">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="className" required>
+                </div>
+                <div class="form-group">
+                    <label>Color (hex code)</label>
+                    <input type="text" id="classColor" value="#8a2be2" placeholder="#8a2be2">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addClassModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal active" id="nameModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Welcome!</h2>
+            </div>
+            <form id="nameForm">
+                <div class="form-group">
+                    <label>What's your name?</label>
+                    <input type="text" id="userNameInput" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Get Started</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'weekly';
+        let selectedDate = new Date();
+        let events = [];
+        let classes = [];
+        let settings = {
+            breakLength: 10,
+            showerLength: 15,
+            mealLength: 30,
+            bufferBetweenEvents: 5,
+            workChunkLength: 50,
+            workStart: '16:00',
+            workEnd: '22:00'
+        };
+        let durationHistory = {};
+        let userName = '';
+        let currentEditingEventId = null;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            if (userName) {
+                document.getElementById('nameModal').classList.remove('active');
+            }
+            setTodayDate();
+            updateView();
+            updateClassDropdowns();
+        });
+        
+        document.getElementById('nameForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            userName = document.getElementById('userNameInput').value.trim() || 'My';
+            document.getElementById('userName').textContent = userName;
+            closeModal('nameModal');
+            saveData();
+        });
+        
+        document.getElementById('addEventForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const event = {
+                id: Date.now(),
+                title: document.getElementById('eventTitle').value,
+                eventType: document.getElementById('eventType').value,
+                duration: parseInt(document.getElementById('eventDuration').value),
+                priority: parseInt(document.getElementById('eventPriority').value),
+                recurrence: document.getElementById('eventRecurrence').value,
+                classTag: document.getElementById('eventClass').value || null,
+                eventDate: document.getElementById('eventDate').value,
+                startTime: document.getElementById('eventType').value === 'fixed' ? document.getElementById('eventStartTime').value : null,
+                color: getEventColor(document.getElementById('eventClass').value, parseInt(document.getElementById('eventPriority').value))
+            };
+            events.push(event);
+            saveData();
+            closeModal('addEventModal');
+            updateView();
+            document.getElementById('addEventForm').reset();
+        });
+        
+        document.getElementById('editEventForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const eventId = parseInt(document.getElementById('editEventId').value);
+            const eventIndex = events.findIndex(e => e.id === eventId);
+            if (eventIndex !== -1) {
+                events[eventIndex] = {
+                    ...events[eventIndex],
+                    title: document.getElementById('editEventTitle').value,
+                    eventType: document.getElementById('editEventType').value,
+                    duration: parseInt(document.getElementById('editEventDuration').value),
+                    priority: parseInt(document.getElementById('editEventPriority').value),
+                    recurrence: document.getElementById('editEventRecurrence').value,
+                    classTag: document.getElementById('editEventClass').value || null,
+                    eventDate: document.getElementById('editEventDate').value,
+                    startTime: document.getElementById('editEventType').value === 'fixed' ? document.getElementById('editEventStartTime').value : null,
+                    color: getEventColor(document.getElementById('editEventClass').value, parseInt(document.getElementById('editEventPriority').value))
+                };
+                saveData();
+                closeModal('editEventModal');
+                updateView();
+            }
+        });
+        
+        document.getElementById('settingsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            settings = {
+                breakLength: parseInt(document.getElementById('settingsBreakLength').value),
+                showerLength: parseInt(document.getElementById('settingsShowerLength').value),
+                mealLength: parseInt(document.getElementById('settingsMealLength').value),
+                bufferBetweenEvents: parseInt(document.getElementById('settingsBuffer').value),
+                workChunkLength: parseInt(document.getElementById('settingsWorkChunk').value),
+                workStart: document.getElementById('settingsWorkStart').value,
+                workEnd: document.getElementById('settingsWorkEnd').value
+            };
+            saveData();
+            closeModal('settingsModal');
+            updateView();
+        });
+        
+        document.getElementById('addClassForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newClass = {
+                id: Date.now(),
+                name: document.getElementById('className').value,
+                color: document.getElementById('classColor').value || '#8a2be2'
+            };
+            classes.push(newClass);
+            saveData();
+            closeModal('addClassModal');
+            updateClassList();
+            updateClassDropdowns();
+            document.getElementById('addClassForm').reset();
+        });
+        
+        function toggleDrawer() {
+            document.getElementById('drawer').classList.toggle('open');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+        
+        function openAddEventModal() {
+            setTodayDate();
+            closeModal('editEventModal');
+            document.getElementById('addEventModal').classList.add('active');
+        }
+        
+        function openAddClassModal() {
+            document.getElementById('addClassModal').classList.add('active');
+        }
+        
+        function openSettings() {
+            document.getElementById('settingsBreakLength').value = settings.breakLength;
+            document.getElementById('settingsShowerLength').value = settings.showerLength;
+            document.getElementById('settingsMealLength').value = settings.mealLength;
+            document.getElementById('settingsBuffer').value = settings.bufferBetweenEvents;
+            document.getElementById('settingsWorkChunk').value = settings.workChunkLength;
+            document.getElementById('settingsWorkStart').value = settings.workStart;
+            document.getElementById('settingsWorkEnd').value = settings.workEnd;
+            document.getElementById('settingsModal').classList.add('active');
+        }
+        
+        function toggleFixedFields() {
+            const eventType = document.getElementById('eventType').value;
+            document.getElementById('fixedTimeGroup').style.display = eventType === 'fixed' ? 'block' : 'none';
+        }
+        
+        function toggleEditFixedFields() {
+            const eventType = document.getElementById('editEventType').value;
+            document.getElementById('editFixedTimeGroup').style.display = eventType === 'fixed' ? 'block' : 'none';
+        }
+        
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            if (document.getElementById('eventDate')) {
+                document.getElementById('eventDate').value = today;
+            }
+        }
+        
+        function changeView(view) {
+            currentView = view;
+            document.querySelectorAll('.btn-icon').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(view + 'Btn').classList.add('active');
+            updateView();
+        }
+        
+        function navigateDate(direction) {
+            if (currentView === 'weekly') {
+                selectedDate.setDate(selectedDate.getDate() + (direction * 7));
+            } else if (currentView === 'daily') {
+                selectedDate.setDate(selectedDate.getDate() + direction);
+            } else if (currentView === 'monthly') {
+                selectedDate.setMonth(selectedDate.getMonth() + direction);
+            }
+            updateView();
+        }
+        
+        function updateView() {
+            updateDateLabel();
+            if (currentView === 'weekly') {
+                renderWeeklyView();
+            } else if (currentView === 'daily') {
+                renderDailyView();
+            } else if (currentView === 'monthly') {
+                renderMonthlyView();
+            }
+        }
+        
+        function updateDateLabel() {
+            const label = document.getElementById('currentDateLabel');
+            if (currentView === 'weekly') {
+                const startOfWeek = getStartOfWeek(selectedDate);
+                label.textContent = `Week of ${formatDate(startOfWeek)}`;
+            } else if (currentView === 'daily') {
+                label.textContent = formatDate(selectedDate);
+            } else if (currentView === 'monthly') {
+                label.textContent = `${getMonthName(selectedDate.getMonth())} ${selectedDate.getFullYear()}`;
+            }
+        }
+        
+        function getStartOfWeek(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day;
+            return new Date(d.setDate(diff));
+        }
+        
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
+        
+        function getMonthName(month) {
+            const names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            return names[month];
+        }
+        
+        function getDayLabel(weekday) {
+            const labels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            return labels[weekday];
+        }
+        
+        function isSameDay(d1, d2) {
+            return d1.getFullYear() === d2.getFullYear() &&
+                   d1.getMonth() === d2.getMonth() &&
+                   d1.getDate() === d2.getDate();
+        }
+        
+        function getEventColor(classTag, priority) {
+            if (classTag) {
+                const cls = classes.find(c => c.name === classTag);
+                if (cls) return cls.color;
+            }
+            const colors = ['#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe'];
+            return colors[priority - 1] || '#8a2be2';
+        }
+        
+        function updateClassList() {
+            const list = document.getElementById('classList');
+            list.innerHTML = classes.map(c => `
+                <div class="class-item">
+                    <div class="class-color" style="background: ${c.color};"></div>
+                    <span>${c.name}</span>
+                </div>
+            `).join('');
+        }
+        
+        function updateClassDropdowns() {
+            const options = classes.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            document.getElementById('eventClass').innerHTML = '<option value="">None</option>' + options;
+            document.getElementById('editEventClass').innerHTML = '<option value="">None</option>' + options;
+        }
+        
+        function openEditEventModal(eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (!event) return;
+            
+            currentEditingEventId = eventId;
+            document.getElementById('editEventId').value = event.id;
+            document.getElementById('editEventTitle').value = event.title;
+            document.getElementById('editEventType').value = event.eventType;
+            document.getElementById('editEventDuration').value = event.duration;
+            document.getElementById('editEventPriority').value = event.priority;
+            document.getElementById('editEventRecurrence').value = event.recurrence;
+            document.getElementById('editEventClass').value = event.classTag || '';
+            document.getElementById('editEventDate').value = event.eventDate;
+            document.getElementById('editEventStartTime').value = event.startTime || '';
+            toggleEditFixedFields();
+            document.getElementById('editEventModal').classList.add('active');
+        }
+        
+        function deleteEvent() {
+            if (confirm('Are you sure you want to delete this event?')) {
+                events = events.filter(e => e.id !== currentEditingEventId);
+                saveData();
+                closeModal('editEventModal');
+                updateView();
+            }
+        }
+        
+        function occursOnDay(event, day) {
+            const eventDate = new Date(event.eventDate);
+            
+            if (event.eventType === 'fixed' && event.startTime) {
+                const fixedDate = new Date(event.eventDate + 'T' + event.startTime);
+                return isSameDay(fixedDate, day);
+            }
+            
+            if (isSameDay(eventDate, day)) return true;
+            
+            if (event.recurrence === 'none') return false;
+            if (day < eventDate) return false;
+            
+            if (event.recurrence === 'daily') return true;
+            if (event.recurrence === 'weekly') return day.getDay() === eventDate.getDay();
+            if (event.recurrence === 'monthly') return day.getDate() === eventDate.getDate();
+            
+            return false;
+        }
+        
+        function generateScheduleForDay(day) {
+            const schedule = [];
+            const dayEvents = events.filter(e => occursOnDay(e, day));
+            
+            dayEvents.forEach(e => {
+                const item = {...e};
+                if (e.eventType === 'fixed' && e.startTime) {
+                    item.startTime = new Date(e.eventDate + 'T' + e.startTime);
+                    item.endTime = new Date(item.startTime.getTime() + e.duration * 60000);
+                }
+                schedule.push(item);
+            });
+            
+            schedule.sort((a, b) => {
+                if (!a.startTime) return 1;
+                if (!b.startTime) return -1;
+                return a.startTime - b.startTime;
+            });
+            
+            return schedule;
+        }
+        
+        function renderWeeklyView() {
+            const container = document.getElementById('calendarView');
+            const startOfWeek = getStartOfWeek(selectedDate);
+            const today = new Date();
+            
+            let html = '<div class="weekly-view">';
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(startOfWeek);
+                day.setDate(startOfWeek.getDate() + i);
+                const isToday = isSameDay(day, today);
+                const dayEvents = generateScheduleForDay(day);
+                
+                html += `
+                    <div class="day-column ${isToday ? 'today' : ''}">
+                        <div class="day-header">
+                            <div class="day-label">${getDayLabel(day.getDay())}</div>
+                            <div class="day-number">${day.getDate()}</div>
+                        </div>
+                        ${dayEvents.length === 0 ? '<div class="no-events">No events</div>' : ''}
+                        ${dayEvents.map(e => `
+                            <div class="event-card ${e.eventType === 'break' ? 'break' : ''}" 
+                                 style="background: ${e.color};" 
+                                 onclick="openEditEventModal(${e.id})">
+                                <div class="event-title">${e.title}</div>
+                                ${e.startTime && e.endTime ? `
+                                    <div class="event-time">${formatTime(e.startTime)} - ${formatTime(e.endTime)}</div>
+                                ` : ''}
+                                <div class="event-duration">${e.duration} min</div>
+                                ${e.classTag ? `<div class="event-class">${e.classTag}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function renderDailyView() {
+            const container = document.getElementById('calendarView');
+            const dayEvents = generateScheduleForDay(selectedDate);
+            
+            let html = '<div class="daily-view">';
+            if (dayEvents.length === 0) {
+                html += '<div class="no-events">No events scheduled for this day</div>';
+            } else {
+                dayEvents.forEach(e => {
+                    html += `
+                        <div class="event-card ${e.eventType === 'break' ? 'break' : ''}" 
+                             style="background: ${e.color}; margin-bottom: 12px;" 
+                             onclick="openEditEventModal(${e.id})">
+                            <div class="event-title">${e.title}</div>
+                            ${e.startTime && e.endTime ? `
+                                <div class="event-time">${formatTime(e.startTime)} - ${formatTime(e.endTime)}</div>
+                            ` : ''}
+                            <div class="event-duration">Duration: ${e.duration} min</div>
+                            ${e.classTag ? `<div class="event-class">Class: ${e.classTag}</div>` : ''}
+                        </div>
+                    `;
+                });
+            }
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function renderMonthlyView() {
+            const container = document.getElementById('calendarView');
+            const year = selectedDate.getFullYear();
+            const month = selectedDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startWeekday = firstDay.getDay();
+            const totalDays = lastDay.getDate();
+            const today = new Date();
+            
+            let html = '<div class="monthly-grid">';
+            
+            ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].forEach(day => {
+                html += `<div class="weekday-header">${day}</div>`;
+            });
+            
+            for (let i = 0; i < startWeekday; i++) {
+                html += '<div class="month-day"></div>';
+            }
+            
+            for (let day = 1; day <= totalDays; day++) {
+                const date = new Date(year, month, day);
+                const isToday = isSameDay(date, today);
+                const dayEvents = generateScheduleForDay(date).slice(0, 3);
+                const extraEvents = generateScheduleForDay(date).length - dayEvents.length;
+                
+                html += `
+                    <div class="month-day ${isToday ? 'today' : ''}" onclick="selectDayAndViewDaily(${year}, ${month}, ${day})">
+                        <div class="month-day-number">${day}</div>
+                        ${dayEvents.map(e => `
+                            <div class="month-event" style="background: ${e.color};">${e.title}</div>
+                        `).join('')}
+                        ${extraEvents > 0 ? `<div style="font-size: 10px; color: rgba(255,255,255,0.7);">+${extraEvents} more</div>` : ''}
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function selectDayAndViewDaily(year, month, day) {
+            selectedDate = new Date(year, month, day);
+            changeView('daily');
+        }
+        
+        function formatTime(date) {
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+        
+        function saveData() {
+            const data = {
+                userName,
+                events,
+                classes,
+                settings,
+                durationHistory
+            };
+            localStorage.setItem('plannerData', JSON.stringify(data));
+        }
+        
+        function loadData() {
+            const data = localStorage.getItem('plannerData');
+            if (data) {
+                const parsed = JSON.parse(data);
+                userName = parsed.userName || '';
+                events = parsed.events || [];
+                classes = parsed.classes || [];
+                settings = parsed.settings || settings;
+                durationHistory = parsed.durationHistory || {};
+                
+                if (userName) {
+                    document.getElementById('userName').textContent = userName;
+                }
+                updateClassList();
+            }
+        }
+    </script>
+</body>
+</html>
+'''
+
+@app.route('/')
+def index():
+    return render_template_string(HTML_TEMPLATE)
+
+if __name__ == '__main__':
+    app.run(debug=True)from flask import Flask, render_template_string
+import os
+
+# Create Flask app
+app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
+
+HTML_TEMPLATE = '''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -162,37 +891,6 @@
             padding: 40px;
             position: relative;
             z-index: 1;
-        }
-        
-        .view-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 0;
-        }
-        
-        .view-tab {
-            padding: 12px 24px;
-            background: transparent;
-            border: none;
-            font-size: 15px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.7);
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-            font-family: 'Poppins', sans-serif;
-            margin-bottom: -2px;
-        }
-        
-        .view-tab:hover {
-            color: #ffffff;
-        }
-        
-        .view-tab.active {
-            color: #ffffff;
-            border-bottom-color: rgba(138, 43, 226, 0.8);
         }
         
         .calendar-header {
@@ -406,12 +1104,8 @@
         }
         
         @keyframes fadeInModal {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .modal.active {
@@ -791,7 +1485,6 @@
             }
         }
         
-        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 12px;
         }
@@ -811,7 +1504,6 @@
             background: linear-gradient(135deg, rgba(138, 43, 226, 0.8), rgba(199, 21, 133, 0.8));
         }
         
-        /* Floating particles effect */
         body::after {
             content: '';
             position: fixed;
@@ -836,731 +1528,3 @@
                 transform: translateY(-20px);
             }
         }
-    </style>
-</head>
-<body>
-    <div class="app-bar">
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <button class="menu-btn" onclick="toggleDrawer()">☰</button>
-            <h1><span id="userName">My</span>'s Planner</h1>
-        </div>
-        <div class="app-bar-actions">
-            <button class="btn-icon" onclick="changeView('weekly')" id="weeklyBtn">📅</button>
-            <button class="btn-icon" onclick="changeView('daily')" id="dailyBtn">📆</button>
-            <button class="btn-icon" onclick="changeView('monthly')" id="monthlyBtn">🗓️</button>
-            <button class="btn-secondary btn" onclick="openSettings()">⚙️ Settings</button>
-        </div>
-    </div>
-    
-    <div class="drawer" id="drawer">
-        <div class="drawer-header">Classes & Commitments</div>
-        <div class="drawer-content">
-            <button class="btn btn-primary" style="width: 100%; margin-bottom: 16px;" onclick="openAddClassModal()">+ Add New Class</button>
-            <div id="classList"></div>
-        </div>
-    </div>
-    
-    <div class="container">
-        <div class="calendar-header">
-            <div class="calendar-nav">
-                <button class="btn-icon" onclick="navigateDate(-1)">◀</button>
-                <h2 id="currentDateLabel"></h2>
-                <button class="btn-icon" onclick="navigateDate(1)">▶</button>
-            </div>
-        </div>
-        
-        <div id="calendarView"></div>
-    </div>
-    
-    <button class="fab" onclick="openAddEventModal()">+</button>
-    
-    <!-- Add Event Modal -->
-    <div class="modal" id="addEventModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Add Event</h2>
-                <button class="close-btn" onclick="closeModal('addEventModal')">&times;</button>
-            </div>
-            <form id="addEventForm">
-                <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" id="eventTitle" required>
-                </div>
-                <div class="form-group">
-                    <label>Event Type</label>
-                    <select id="eventType" onchange="toggleFixedFields()">
-                        <option value="flexible">Flexible</option>
-                        <option value="fixed">Fixed</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Duration (minutes)</label>
-                    <input type="number" id="eventDuration" value="30" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Priority (1=highest, 5=lowest)</label>
-                    <select id="eventPriority">
-                        <option value="1">1 - Highest</option>
-                        <option value="2">2</option>
-                        <option value="3" selected>3 - Medium</option>
-                        <option value="4">4</option>
-                        <option value="5">5 - Lowest</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Recurrence</label>
-                    <select id="eventRecurrence">
-                        <option value="none">None</option>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Class / Commitment (optional)</label>
-                    <select id="eventClass">
-                        <option value="">None</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Event Date</label>
-                    <input type="date" id="eventDate" required>
-                </div>
-                <div class="form-group" id="fixedTimeGroup" style="display: none;">
-                    <label>Start Time (for fixed events)</label>
-                    <input type="time" id="eventStartTime">
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('addEventModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Event</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Edit Event Modal -->
-    <div class="modal" id="editEventModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Edit Event</h2>
-                <button class="close-btn" onclick="closeModal('editEventModal')">&times;</button>
-            </div>
-            <form id="editEventForm">
-                <input type="hidden" id="editEventId">
-                <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" id="editEventTitle" required>
-                </div>
-                <div class="form-group">
-                    <label>Event Type</label>
-                    <select id="editEventType" onchange="toggleEditFixedFields()">
-                        <option value="flexible">Flexible</option>
-                        <option value="fixed">Fixed</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Duration (minutes)</label>
-                    <input type="number" id="editEventDuration" value="30" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Priority (1=highest, 5=lowest)</label>
-                    <select id="editEventPriority">
-                        <option value="1">1 - Highest</option>
-                        <option value="2">2</option>
-                        <option value="3">3 - Medium</option>
-                        <option value="4">4</option>
-                        <option value="5">5 - Lowest</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Recurrence</label>
-                    <select id="editEventRecurrence">
-                        <option value="none">None</option>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Class / Commitment (optional)</label>
-                    <select id="editEventClass">
-                        <option value="">None</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Event Date</label>
-                    <input type="date" id="editEventDate" required>
-                </div>
-                <div class="form-group" id="editFixedTimeGroup" style="display: none;">
-                    <label>Start Time (for fixed events)</label>
-                    <input type="time" id="editEventStartTime">
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="deleteEvent()">Delete</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('editEventModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Settings Modal -->
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Settings</h2>
-                <button class="close-btn" onclick="closeModal('settingsModal')">&times;</button>
-            </div>
-            <form id="settingsForm">
-                <div class="form-group">
-                    <label>Break Length (minutes)</label>
-                    <input type="number" id="settingsBreakLength" value="10" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Shower Length (minutes)</label>
-                    <input type="number" id="settingsShowerLength" value="15" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Meal Length (minutes)</label>
-                    <input type="number" id="settingsMealLength" value="30" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Buffer Between Events (minutes)</label>
-                    <input type="number" id="settingsBuffer" value="5" min="0">
-                </div>
-                <div class="form-group">
-                    <label>Work Chunk Length (minutes)</label>
-                    <input type="number" id="settingsWorkChunk" value="50" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Work Start Time</label>
-                    <input type="time" id="settingsWorkStart" value="16:00">
-                </div>
-                <div class="form-group">
-                    <label>Work End Time</label>
-                    <input type="time" id="settingsWorkEnd" value="22:00">
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('settingsModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Settings</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Add Class Modal -->
-    <div class="modal" id="addClassModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Add Class / Commitment</h2>
-                <button class="close-btn" onclick="closeModal('addClassModal')">&times;</button>
-            </div>
-            <form id="addClassForm">
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" id="className" required>
-                </div>
-                <div class="form-group">
-                    <label>Color (hex code)</label>
-                    <input type="text" id="classColor" value="#8a2be2" placeholder="#8a2be2">
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('addClassModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Class</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Name Prompt Modal -->
-    <div class="modal active" id="nameModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Welcome!</h2>
-            </div>
-            <form id="nameForm">
-                <div class="form-group">
-                    <label>What's your name?</label>
-                    <input type="text" id="userNameInput" required>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Get Started</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        // State management
-        let currentView = 'weekly';
-        let selectedDate = new Date();
-        let events = [];
-        let classes = [];
-        let settings = {
-            breakLength: 10,
-            showerLength: 15,
-            mealLength: 30,
-            bufferBetweenEvents: 5,
-            workChunkLength: 50,
-            workStart: '16:00',
-            workEnd: '22:00'
-        };
-        let durationHistory = {};
-        let userName = '';
-        let currentEditingEventId = null;
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadData();
-            if (userName) {
-                document.getElementById('nameModal').classList.remove('active');
-            }
-            setTodayDate();
-            updateView();
-            updateClassDropdowns();
-        });
-        
-        // Name form
-        document.getElementById('nameForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            userName = document.getElementById('userNameInput').value.trim() || 'My';
-            document.getElementById('userName').textContent = userName;
-            closeModal('nameModal');
-            saveData();
-        });
-        
-        // Add Event form
-        document.getElementById('addEventForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const event = {
-                id: Date.now(),
-                title: document.getElementById('eventTitle').value,
-                eventType: document.getElementById('eventType').value,
-                duration: parseInt(document.getElementById('eventDuration').value),
-                priority: parseInt(document.getElementById('eventPriority').value),
-                recurrence: document.getElementById('eventRecurrence').value,
-                classTag: document.getElementById('eventClass').value || null,
-                eventDate: document.getElementById('eventDate').value,
-                startTime: document.getElementById('eventType').value === 'fixed' ? document.getElementById('eventStartTime').value : null,
-                color: getEventColor(document.getElementById('eventClass').value, parseInt(document.getElementById('eventPriority').value))
-            };
-            events.push(event);
-            saveData();
-            closeModal('addEventModal');
-            updateView();
-            document.getElementById('addEventForm').reset();
-        });
-        
-        // Edit Event form
-        document.getElementById('editEventForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const eventId = parseInt(document.getElementById('editEventId').value);
-            const eventIndex = events.findIndex(e => e.id === eventId);
-            if (eventIndex !== -1) {
-                events[eventIndex] = {
-                    ...events[eventIndex],
-                    title: document.getElementById('editEventTitle').value,
-                    eventType: document.getElementById('editEventType').value,
-                    duration: parseInt(document.getElementById('editEventDuration').value),
-                    priority: parseInt(document.getElementById('editEventPriority').value),
-                    recurrence: document.getElementById('editEventRecurrence').value,
-                    classTag: document.getElementById('editEventClass').value || null,
-                    eventDate: document.getElementById('editEventDate').value,
-                    startTime: document.getElementById('editEventType').value === 'fixed' ? document.getElementById('editEventStartTime').value : null,
-                    color: getEventColor(document.getElementById('editEventClass').value, parseInt(document.getElementById('editEventPriority').value))
-                };
-                saveData();
-                closeModal('editEventModal');
-                updateView();
-            }
-        });
-        
-        // Settings form
-        document.getElementById('settingsForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            settings = {
-                breakLength: parseInt(document.getElementById('settingsBreakLength').value),
-                showerLength: parseInt(document.getElementById('settingsShowerLength').value),
-                mealLength: parseInt(document.getElementById('settingsMealLength').value),
-                bufferBetweenEvents: parseInt(document.getElementById('settingsBuffer').value),
-                workChunkLength: parseInt(document.getElementById('settingsWorkChunk').value),
-                workStart: document.getElementById('settingsWorkStart').value,
-                workEnd: document.getElementById('settingsWorkEnd').value
-            };
-            saveData();
-            closeModal('settingsModal');
-            updateView();
-        });
-        
-        // Add Class form
-        document.getElementById('addClassForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const newClass = {
-                id: Date.now(),
-                name: document.getElementById('className').value,
-                color: document.getElementById('classColor').value || '#8a2be2'
-            };
-            classes.push(newClass);
-            saveData();
-            closeModal('addClassModal');
-            updateClassList();
-            updateClassDropdowns();
-            document.getElementById('addClassForm').reset();
-        });
-        
-        // Helper functions
-        function toggleDrawer() {
-            document.getElementById('drawer').classList.toggle('open');
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-        
-        function openAddEventModal() {
-            setTodayDate();
-            closeModal('editEventModal');
-            document.getElementById('addEventModal').classList.add('active');
-        }
-        
-        function openAddClassModal() {
-            document.getElementById('addClassModal').classList.add('active');
-        }
-        
-        function openSettings() {
-            document.getElementById('settingsBreakLength').value = settings.breakLength;
-            document.getElementById('settingsShowerLength').value = settings.showerLength;
-            document.getElementById('settingsMealLength').value = settings.mealLength;
-            document.getElementById('settingsBuffer').value = settings.bufferBetweenEvents;
-            document.getElementById('settingsWorkChunk').value = settings.workChunkLength;
-            document.getElementById('settingsWorkStart').value = settings.workStart;
-            document.getElementById('settingsWorkEnd').value = settings.workEnd;
-            document.getElementById('settingsModal').classList.add('active');
-        }
-        
-        function toggleFixedFields() {
-            const eventType = document.getElementById('eventType').value;
-            document.getElementById('fixedTimeGroup').style.display = eventType === 'fixed' ? 'block' : 'none';
-        }
-        
-        function toggleEditFixedFields() {
-            const eventType = document.getElementById('editEventType').value;
-            document.getElementById('editFixedTimeGroup').style.display = eventType === 'fixed' ? 'block' : 'none';
-        }
-        
-        function setTodayDate() {
-            const today = new Date().toISOString().split('T')[0];
-            if (document.getElementById('eventDate')) {
-                document.getElementById('eventDate').value = today;
-            }
-        }
-        
-        function changeView(view) {
-            currentView = view;
-            document.querySelectorAll('.btn-icon').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(view + 'Btn').classList.add('active');
-            updateView();
-        }
-        
-        function navigateDate(direction) {
-            if (currentView === 'weekly') {
-                selectedDate.setDate(selectedDate.getDate() + (direction * 7));
-            } else if (currentView === 'daily') {
-                selectedDate.setDate(selectedDate.getDate() + direction);
-            } else if (currentView === 'monthly') {
-                selectedDate.setMonth(selectedDate.getMonth() + direction);
-            }
-            updateView();
-        }
-        
-        function updateView() {
-            updateDateLabel();
-            if (currentView === 'weekly') {
-                renderWeeklyView();
-            } else if (currentView === 'daily') {
-                renderDailyView();
-            } else if (currentView === 'monthly') {
-                renderMonthlyView();
-            }
-        }
-        
-        function updateDateLabel() {
-            const label = document.getElementById('currentDateLabel');
-            if (currentView === 'weekly') {
-                const startOfWeek = getStartOfWeek(selectedDate);
-                label.textContent = `Week of ${formatDate(startOfWeek)}`;
-            } else if (currentView === 'daily') {
-                label.textContent = formatDate(selectedDate);
-            } else if (currentView === 'monthly') {
-                label.textContent = `${getMonthName(selectedDate.getMonth())} ${selectedDate.getFullYear()}`;
-            }
-        }
-        
-        function getStartOfWeek(date) {
-            const d = new Date(date);
-            const day = d.getDay();
-            const diff = d.getDate() - day;
-            return new Date(d.setDate(diff));
-        }
-        
-        function formatDate(date) {
-            return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        }
-        
-        function getMonthName(month) {
-            const names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            return names[month];
-        }
-        
-        function getDayLabel(weekday) {
-            const labels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-            return labels[weekday];
-        }
-        
-        function isSameDay(d1, d2) {
-            return d1.getFullYear() === d2.getFullYear() &&
-                   d1.getMonth() === d2.getMonth() &&
-                   d1.getDate() === d2.getDate();
-        }
-        
-        function getEventColor(classTag, priority) {
-            if (classTag) {
-                const cls = classes.find(c => c.name === classTag);
-                if (cls) return cls.color;
-            }
-            const colors = ['#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe'];
-            return colors[priority - 1] || '#8a2be2';
-        }
-        
-        function updateClassList() {
-            const list = document.getElementById('classList');
-            list.innerHTML = classes.map(c => `
-                <div class="class-item">
-                    <div class="class-color" style="background: ${c.color};"></div>
-                    <span>${c.name}</span>
-                </div>
-            `).join('');
-        }
-        
-        function updateClassDropdowns() {
-            const options = classes.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-            document.getElementById('eventClass').innerHTML = '<option value="">None</option>' + options;
-            document.getElementById('editEventClass').innerHTML = '<option value="">None</option>' + options;
-        }
-        
-        function openEditEventModal(eventId) {
-            const event = events.find(e => e.id === eventId);
-            if (!event) return;
-            
-            currentEditingEventId = eventId;
-            document.getElementById('editEventId').value = event.id;
-            document.getElementById('editEventTitle').value = event.title;
-            document.getElementById('editEventType').value = event.eventType;
-            document.getElementById('editEventDuration').value = event.duration;
-            document.getElementById('editEventPriority').value = event.priority;
-            document.getElementById('editEventRecurrence').value = event.recurrence;
-            document.getElementById('editEventClass').value = event.classTag || '';
-            document.getElementById('editEventDate').value = event.eventDate;
-            document.getElementById('editEventStartTime').value = event.startTime || '';
-            toggleEditFixedFields();
-            document.getElementById('editEventModal').classList.add('active');
-        }
-        
-        function deleteEvent() {
-            if (confirm('Are you sure you want to delete this event?')) {
-                events = events.filter(e => e.id !== currentEditingEventId);
-                saveData();
-                closeModal('editEventModal');
-                updateView();
-            }
-        }
-        
-        function occursOnDay(event, day) {
-            const eventDate = new Date(event.eventDate);
-            
-            if (event.eventType === 'fixed' && event.startTime) {
-                const fixedDate = new Date(event.eventDate + 'T' + event.startTime);
-                return isSameDay(fixedDate, day);
-            }
-            
-            if (isSameDay(eventDate, day)) return true;
-            
-            if (event.recurrence === 'none') return false;
-            if (day < eventDate) return false;
-            
-            if (event.recurrence === 'daily') return true;
-            if (event.recurrence === 'weekly') return day.getDay() === eventDate.getDay();
-            if (event.recurrence === 'monthly') return day.getDate() === eventDate.getDate();
-            
-            return false;
-        }
-        
-        function generateScheduleForDay(day) {
-            const schedule = [];
-            const dayEvents = events.filter(e => occursOnDay(e, day));
-            
-            dayEvents.forEach(e => {
-                const item = {...e};
-                if (e.eventType === 'fixed' && e.startTime) {
-                    item.startTime = new Date(e.eventDate + 'T' + e.startTime);
-                    item.endTime = new Date(item.startTime.getTime() + e.duration * 60000);
-                }
-                schedule.push(item);
-            });
-            
-            schedule.sort((a, b) => {
-                if (!a.startTime) return 1;
-                if (!b.startTime) return -1;
-                return a.startTime - b.startTime;
-            });
-            
-            return schedule;
-        }
-        
-        function renderWeeklyView() {
-            const container = document.getElementById('calendarView');
-            const startOfWeek = getStartOfWeek(selectedDate);
-            const today = new Date();
-            
-            let html = '<div class="weekly-view">';
-            for (let i = 0; i < 7; i++) {
-                const day = new Date(startOfWeek);
-                day.setDate(startOfWeek.getDate() + i);
-                const isToday = isSameDay(day, today);
-                const dayEvents = generateScheduleForDay(day);
-                
-                html += `
-                    <div class="day-column ${isToday ? 'today' : ''}">
-                        <div class="day-header">
-                            <div class="day-label">${getDayLabel(day.getDay())}</div>
-                            <div class="day-number">${day.getDate()}</div>
-                        </div>
-                        ${dayEvents.length === 0 ? '<div class="no-events">No events</div>' : ''}
-                        ${dayEvents.map(e => `
-                            <div class="event-card ${e.eventType === 'break' ? 'break' : ''}" 
-                                 style="background: ${e.color};" 
-                                 onclick="openEditEventModal(${e.id})">
-                                <div class="event-title">${e.title}</div>
-                                ${e.startTime && e.endTime ? `
-                                    <div class="event-time">${formatTime(e.startTime)} - ${formatTime(e.endTime)}</div>
-                                ` : ''}
-                                <div class="event-duration">${e.duration} min</div>
-                                ${e.classTag ? `<div class="event-class">${e.classTag}</div>` : ''}
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
-            html += '</div>';
-            container.innerHTML = html;
-        }
-        
-        function renderDailyView() {
-            const container = document.getElementById('calendarView');
-            const dayEvents = generateScheduleForDay(selectedDate);
-            
-            let html = '<div class="daily-view">';
-            if (dayEvents.length === 0) {
-                html += '<div class="no-events">No events scheduled for this day</div>';
-            } else {
-                dayEvents.forEach(e => {
-                    html += `
-                        <div class="event-card ${e.eventType === 'break' ? 'break' : ''}" 
-                             style="background: ${e.color}; margin-bottom: 12px;" 
-                             onclick="openEditEventModal(${e.id})">
-                            <div class="event-title">${e.title}</div>
-                            ${e.startTime && e.endTime ? `
-                                <div class="event-time">${formatTime(e.startTime)} - ${formatTime(e.endTime)}</div>
-                            ` : ''}
-                            <div class="event-duration">Duration: ${e.duration} min</div>
-                            ${e.classTag ? `<div class="event-class">Class: ${e.classTag}</div>` : ''}
-                        </div>
-                    `;
-                });
-            }
-            html += '</div>';
-            container.innerHTML = html;
-        }
-        
-        function renderMonthlyView() {
-            const container = document.getElementById('calendarView');
-            const year = selectedDate.getFullYear();
-            const month = selectedDate.getMonth();
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const startWeekday = firstDay.getDay();
-            const totalDays = lastDay.getDate();
-            const today = new Date();
-            
-            let html = '<div class="monthly-grid">';
-            
-            ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].forEach(day => {
-                html += `<div class="weekday-header">${day}</div>`;
-            });
-            
-            for (let i = 0; i < startWeekday; i++) {
-                html += '<div class="month-day"></div>';
-            }
-            
-            for (let day = 1; day <= totalDays; day++) {
-                const date = new Date(year, month, day);
-                const isToday = isSameDay(date, today);
-                const dayEvents = generateScheduleForDay(date).slice(0, 3);
-                const extraEvents = generateScheduleForDay(date).length - dayEvents.length;
-                
-                html += `
-                    <div class="month-day ${isToday ? 'today' : ''}" onclick="selectDayAndViewDaily(${year}, ${month}, ${day})">
-                        <div class="month-day-number">${day}</div>
-                        ${dayEvents.map(e => `
-                            <div class="month-event" style="background: ${e.color};">${e.title}</div>
-                        `).join('')}
-                        ${extraEvents > 0 ? `<div style="font-size: 10px; color: rgba(255,255,255,0.7);">+${extraEvents} more</div>` : ''}
-                    </div>
-                `;
-            }
-            
-            html += '</div>';
-            container.innerHTML = html;
-        }
-        
-        function selectDayAndViewDaily(year, month, day) {
-            selectedDate = new Date(year, month, day);
-            changeView('daily');
-        }
-        
-        function formatTime(date) {
-            const hours = date.getHours().toString().padStart(2, '0');
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-            return `${hours}:${minutes}`;
-        }
-        
-        function saveData() {
-            const data = {
-                userName,
-                events,
-                classes,
-                settings,
-                durationHistory
-            };
-            localStorage.setItem('plannerData', JSON.stringify(data));
-        }
-        
-        function loadData() {
-            const data = localStorage.getItem('plannerData');
-            if (data) {
-                const parsed = JSON.parse(data);
-                userName = parsed.userName || '';
-                events = parsed.events || [];
-                classes = parsed.classes || [];
-                settings = parsed.settings || settings;
-                durationHistory = parsed.durationHistory || {};
-                
-                if (userName) {
-                    document.getElementById('userName').textContent = userName;
-                }
-                updateClassList();
-            }
-        }
-    </script>
-</body>
-</html>
