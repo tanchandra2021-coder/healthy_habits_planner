@@ -25,7 +25,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, color 0.3s ease;
         }
         
         /* White theme */
@@ -33,60 +33,91 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             --gradient-bg: #ffffff;
             --text-color: #1f2937;
             --text-secondary: #6b7280;
-            --card-bg: rgba(249, 250, 251, 0.95);
-            --card-border: rgba(229, 231, 235, 0.8);
-            --hover-bg: rgba(243, 244, 246, 0.95);
-            --accent-color: #8b5cf6;
-            --accent-hover: #7c3aed;
-        }
-        
-        /* Dark theme */
-        body.gradient-2 {
-            --gradient-bg: #0f172a;
-            --text-color: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --card-bg: rgba(30, 41, 59, 0.95);
-            --card-border: rgba(51, 65, 85, 0.8);
-            --hover-bg: rgba(51, 65, 85, 0.95);
-            --accent-color: #a78bfa;
-            --accent-hover: #8b5cf6;
-        }
-        
-        /* Light grey theme */
-        body.gradient-3 {
-            --gradient-bg: #f3f4f6;
-            --text-color: #111827;
-            --text-secondary: #6b7280;
             --card-bg: rgba(255, 255, 255, 0.95);
             --card-border: rgba(229, 231, 235, 0.8);
-            --hover-bg: rgba(249, 250, 251, 0.95);
-            --accent-color: #8b5cf6;
-            --accent-hover: #7c3aed;
+            --hover-bg: rgba(243, 244, 246, 0.95);
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --header-text: #1f2937;
+            --btn-text: #ffffff;
+        }
+        
+        /* Black theme */
+        body.gradient-2 {
+            --gradient-bg: #000000;
+            --text-color: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --card-bg: rgba(30, 30, 30, 0.95);
+            --card-border: rgba(60, 60, 60, 0.8);
+            --hover-bg: rgba(40, 40, 40, 0.95);
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --header-text: #ffffff;
+            --btn-text: #ffffff;
+        }
+        
+        /* Grey theme */
+        body.gradient-3 {
+            --gradient-bg: #6b7280;
+            --text-color: #f9fafb;
+            --text-secondary: #e5e7eb;
+            --card-bg: rgba(75, 85, 99, 0.95);
+            --card-border: rgba(107, 114, 128, 0.8);
+            --hover-bg: rgba(55, 65, 81, 0.95);
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --header-text: #ffffff;
+            --btn-text: #ffffff;
         }
         
         /* Warm pastel theme */
         body.gradient-4 {
-            --gradient-bg: linear-gradient(135deg, #fef3f2 0%, #fef7f6 50%, #f0f9ff 100%);
+            --gradient-bg: linear-gradient(135deg, #fef3f2 0%, #fef7f6 50%, #fff7ed 100%);
             --text-color: #1f2937;
             --text-secondary: #6b7280;
             --card-bg: rgba(255, 255, 255, 0.95);
             --card-border: rgba(254, 226, 226, 0.6);
             --hover-bg: rgba(254, 243, 242, 0.95);
-            --accent-color: #f87171;
-            --accent-hover: #ef4444;
+            --accent-color: #f97316;
+            --accent-hover: #ea580c;
+            --header-text: #1f2937;
+            --btn-text: #ffffff;
         }
         
-        /* Fresh pastel theme */
+        /* Cool pastel theme */
         body.gradient-5 {
-            --gradient-bg: linear-gradient(135deg, #f0fdf4 0%, #f7fee7 50%, #fef3c7 100%);
+            --gradient-bg: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%);
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(191, 219, 254, 0.6);
+            --hover-bg: rgba(240, 249, 255, 0.95);
+            --accent-color: #0284c7;
+            --accent-hover: #0369a1;
+            --header-text: #1f2937;
+            --btn-text: #ffffff;
+        }
+        
+        /* Green pastel theme */
+        body.gradient-6 {
+            --gradient-bg: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #d1fae5 100%);
             --text-color: #1f2937;
             --text-secondary: #6b7280;
             --card-bg: rgba(255, 255, 255, 0.95);
             --card-border: rgba(220, 252, 231, 0.6);
             --hover-bg: rgba(240, 253, 244, 0.95);
-            --accent-color: #10b981;
-            --accent-hover: #059669;
+            --accent-color: #059669;
+            --accent-hover: #047857;
+            --header-text: #1f2937;
+            --btn-text: #ffffff;
         }
+        
+        body.gradient-1::before,
+        body.gradient-2::before,
+        body.gradient-3::before {
+            display: none;
+        }
+        
         body::before {
             content: '';
             position: fixed;
@@ -94,26 +125,20 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(252, 70, 107, 0.3), transparent 50%),
-                        radial-gradient(circle at 40% 20%, rgba(99, 179, 237, 0.3), transparent 50%);
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1), transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.08), transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.06), transparent 50%);
             pointer-events: none;
             z-index: 0;
         }
         
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
         .app-bar {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--card-bg);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            border-bottom: 1px solid var(--card-border);
             padding: 20px 40px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -125,9 +150,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         .app-bar h1 {
             font-size: 28px;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--header-text);
             letter-spacing: -0.5px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         
         .app-bar-actions {
@@ -169,32 +193,33 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.8), rgba(199, 21, 133, 0.8));
-            color: white;
-            box-shadow: 0 8px 24px rgba(138, 43, 226, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--accent-color);
+            color: var(--btn-text);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--accent-color);
         }
         
         .btn-primary:hover {
+            background: var(--accent-hover);
             transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(138, 43, 226, 0.6);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.12);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
             backdrop-filter: blur(10px);
         }
         
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--hover-bg);
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .btn-icon {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
             padding: 10px;
             border-radius: 12px;
             display: flex;
@@ -202,22 +227,23 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             justify-content: center;
             min-width: 44px;
             height: 44px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--card-border);
             backdrop-filter: blur(10px);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-color);
         }
         
         .btn-icon:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--hover-bg);
             transform: scale(1.05);
-            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .btn-icon.active {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.9), rgba(199, 21, 133, 0.9));
-            color: white;
-            box-shadow: 0 8px 24px rgba(138, 43, 226, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: var(--accent-color);
+            color: var(--btn-text);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--accent-color);
         }
         
         .container {
@@ -234,12 +260,12 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             align-items: center;
             margin-bottom: 32px;
             padding: 24px 32px;
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--card-bg);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             border-radius: 24px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--card-border);
             animation: slideDown 0.6s ease;
         }
         
@@ -263,10 +289,9 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         .calendar-nav h2 {
             font-size: 24px;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--text-color);
             min-width: 280px;
             text-align: center;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         
         .weekly-view {
@@ -282,14 +307,14 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
         
         .day-column {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--card-bg);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             border-radius: 20px;
             padding: 20px;
             min-height: 500px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--card-border);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
@@ -302,38 +327,38 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
             opacity: 0;
             transition: opacity 0.4s;
         }
         
         .day-column:hover::before {
-            opacity: 1;
+            opacity: 0.05;
         }
         
         .day-column:hover {
             transform: translateY(-8px);
-            box-shadow: 0 16px 48px 0 rgba(31, 38, 135, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--accent-color);
         }
         
         .day-column.today {
-            background: rgba(138, 43, 226, 0.15);
-            border: 2px solid rgba(138, 43, 226, 0.6);
-            box-shadow: 0 8px 32px 0 rgba(138, 43, 226, 0.4);
+            background: var(--card-bg);
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         }
         
         .day-header {
             text-align: center;
             padding-bottom: 16px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 2px solid var(--card-border);
             margin-bottom: 20px;
         }
         
         .day-label {
             font-size: 12px;
             font-weight: 700;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1.5px;
         }
@@ -341,29 +366,26 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         .day-number {
             font-size: 32px;
             font-weight: 800;
-            color: #ffffff;
+            color: var(--text-color);
             margin-top: 8px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
         
         .day-column.today .day-number {
-            background: linear-gradient(135deg, #a78bfa, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--accent-color);
         }
         
         .event-card {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.9), rgba(199, 21, 133, 0.9));
+            background: var(--accent-color);
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 12px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid transparent;
             backdrop-filter: blur(10px);
             position: relative;
             overflow: hidden;
+            color: var(--btn-text);
         }
         
         .event-card::before {
@@ -373,7 +395,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s;
         }
         
@@ -383,44 +405,45 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         
         .event-card:hover {
             transform: translateX(4px) scale(1.02);
-            box-shadow: 0 12px 40px rgba(138, 43, 226, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
         .event-title {
             font-size: 15px;
             font-weight: 700;
-            color: white;
+            color: var(--btn-text);
             margin-bottom: 8px;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         
         .event-time {
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--btn-text);
             margin-bottom: 6px;
             font-weight: 500;
+            opacity: 0.95;
         }
         
         .event-duration {
             font-size: 12px;
-            color: rgba(255, 255, 255, 0.75);
+            color: var(--btn-text);
             font-weight: 500;
+            opacity: 0.9;
         }
         
         .event-class {
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.95);
+            color: var(--btn-text);
             margin-top: 6px;
             font-weight: 600;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.2);
             display: inline-block;
             padding: 4px 10px;
             border-radius: 8px;
         }
         
         .event-card.break {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9));
+            background: #10b981;
         }
         
         .modal {
@@ -448,7 +471,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
         
         .modal-content {
-            background: rgba(255, 255, 255, 0.12);
+            background: var(--card-bg);
             backdrop-filter: blur(40px) saturate(180%);
             -webkit-backdrop-filter: blur(40px) saturate(180%);
             border-radius: 28px;
@@ -457,8 +480,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--card-border);
             animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
@@ -483,15 +506,14 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         .modal-header h2 {
             font-size: 28px;
             font-weight: 800;
-            color: #ffffff;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            color: var(--text-color);
         }
         
         .close-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             font-size: 24px;
-            color: #ffffff;
+            color: var(--text-color);
             cursor: pointer;
             padding: 0;
             width: 40px;
@@ -505,9 +527,9 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
         
         .close-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--hover-bg);
             transform: rotate(90deg);
-            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .form-group {
@@ -519,8 +541,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             margin-bottom: 10px;
             font-size: 14px;
             font-weight: 600;
-            color: #ffffff;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            color: var(--text-color);
         }
         
         .form-group input,
@@ -528,29 +549,29 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         .form-group textarea {
             width: 100%;
             padding: 14px 18px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid var(--card-border);
             border-radius: 14px;
             font-size: 14px;
             font-family: 'Poppins', sans-serif;
             transition: all 0.3s;
-            background: rgba(255, 255, 255, 0.08);
-            color: #ffffff;
+            background: var(--card-bg);
+            color: var(--text-color);
             backdrop-filter: blur(10px);
             font-weight: 500;
         }
         
         .form-group input::placeholder,
         .form-group textarea::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: var(--text-secondary);
         }
         
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: rgba(138, 43, 226, 0.8);
-            background: rgba(255, 255, 255, 0.12);
-            box-shadow: 0 8px 24px rgba(138, 43, 226, 0.3);
+            border-color: var(--accent-color);
+            background: var(--card-bg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             transform: translateY(-2px);
         }
         
@@ -559,8 +580,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
         
         .form-group select option {
-            background: rgba(30, 30, 60, 0.95);
-            color: #ffffff;
+            background: var(--card-bg);
+            color: var(--text-color);
         }
         
         .form-actions {
@@ -570,20 +591,66 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             margin-top: 24px;
         }
         
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            background: var(--hover-bg);
+            border: 2px solid var(--card-border);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .checkbox-item:hover {
+            background: var(--card-bg);
+            border-color: var(--accent-color);
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .checkbox-label {
+            flex: 1;
+        }
+        
+        .checkbox-label strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--text-color);
+        }
+        
+        .checkbox-label span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
         .drawer {
             position: fixed;
             left: -350px;
             top: 0;
             width: 350px;
             height: 100%;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
             backdrop-filter: blur(40px) saturate(180%);
             -webkit-backdrop-filter: blur(40px) saturate(180%);
-            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
             transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 999;
             overflow-y: auto;
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            border-right: 1px solid var(--card-border);
         }
         
         .drawer.open {
@@ -591,12 +658,11 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
         
         .drawer-header {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.9), rgba(199, 21, 133, 0.9));
-            color: white;
+            background: var(--accent-color);
+            color: var(--btn-text);
             padding: 32px 24px;
             font-size: 22px;
             font-weight: 800;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             display: flex;
             justify-content: space-between;
@@ -606,7 +672,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         .drawer-close {
             background: rgba(255, 255, 255, 0.2);
             border: none;
-            color: white;
+            color: var(--btn-text);
             font-size: 24px;
             width: 36px;
             height: 36px;
@@ -634,16 +700,16 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             padding: 16px;
             border-radius: 14px;
             margin-bottom: 12px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: var(--hover-bg);
+            border: 1px solid var(--card-border);
             transition: all 0.3s;
             backdrop-filter: blur(10px);
         }
         
         .class-item:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: var(--card-bg);
             transform: translateX(8px);
-            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .class-item:hover .class-delete {
@@ -654,12 +720,12 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border: 2px solid var(--card-border);
         }
         
         .class-item span {
-            color: #ffffff;
+            color: var(--text-color);
             font-weight: 600;
             flex: 1;
         }
@@ -707,47 +773,52 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
         
         .gradient-option.selected {
-            border-color: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.4);
+            border-color: var(--accent-color);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         }
         
         .gradient-option.g1 {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
         }
         
         .gradient-option.g2 {
-            background: linear-gradient(135deg, #ff6b6b, #c44569);
+            background: #000000;
         }
         
         .gradient-option.g3 {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
+            background: #6b7280;
         }
         
         .gradient-option.g4 {
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            background: linear-gradient(135deg, #fef3f2, #fff7ed);
         }
         
         .gradient-option.g5 {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
+            background: linear-gradient(135deg, #f0f9ff, #dbeafe);
+        }
+        
+        .gradient-option.g6 {
+            background: linear-gradient(135deg, #f0fdf4, #d1fae5);
         }
         
         .monthly-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 12px;
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--card-bg);
             backdrop-filter: blur(20px) saturate(180%);
             padding: 32px;
             border-radius: 24px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--card-border);
         }
         
         .weekday-header {
             text-align: center;
             font-size: 13px;
             font-weight: 700;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--text-secondary);
             padding: 16px;
             text-transform: uppercase;
             letter-spacing: 1.5px;
@@ -756,40 +827,37 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         .month-day {
             min-height: 120px;
             padding: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--card-border);
             border-radius: 14px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--hover-bg);
             backdrop-filter: blur(10px);
         }
         
         .month-day:hover {
-            border-color: rgba(138, 43, 226, 0.6);
-            box-shadow: 0 8px 24px rgba(138, 43, 226, 0.3);
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             transform: translateY(-4px);
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
         }
         
         .month-day.today {
-            border-color: rgba(138, 43, 226, 0.8);
-            background: rgba(138, 43, 226, 0.15);
-            box-shadow: 0 8px 24px rgba(138, 43, 226, 0.4);
+            border-color: var(--accent-color);
+            background: var(--card-bg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-width: 2px;
         }
         
         .month-day-number {
             font-size: 18px;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--text-color);
             margin-bottom: 10px;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         
         .month-day.today .month-day-number {
-            background: linear-gradient(135deg, #a78bfa, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--accent-color);
             font-size: 20px;
         }
         
@@ -798,12 +866,12 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             padding: 6px 8px;
             border-radius: 8px;
             margin-bottom: 6px;
-            color: white;
+            color: var(--btn-text);
             font-weight: 600;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .fab {
@@ -813,19 +881,19 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             width: 64px;
             height: 64px;
             border-radius: 50%;
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.95), rgba(199, 21, 133, 0.95));
-            color: white;
+            background: var(--accent-color);
+            color: var(--btn-text);
             border: none;
             font-size: 28px;
             cursor: pointer;
-            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.5);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 100;
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid var(--accent-color);
         }
         
         .fab::before {
@@ -834,14 +902,15 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.5), rgba(199, 21, 133, 0.5));
+            background: var(--accent-color);
             animation: pulse 2s infinite;
+            opacity: 0.3;
         }
         
         @keyframes pulse {
             0%, 100% {
                 transform: scale(1);
-                opacity: 1;
+                opacity: 0.3;
             }
             50% {
                 transform: scale(1.2);
@@ -851,22 +920,22 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         
         .fab:hover {
             transform: scale(1.15) rotate(90deg);
-            box-shadow: 0 12px 48px rgba(138, 43, 226, 0.7);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
         
         .daily-view {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--card-bg);
             backdrop-filter: blur(20px) saturate(180%);
             border-radius: 24px;
             padding: 32px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--card-border);
         }
         
         .no-events {
             text-align: center;
             padding: 64px;
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-secondary);
             font-size: 16px;
             font-weight: 500;
         }
@@ -877,13 +946,13 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             font-size: 28px;
             cursor: pointer;
             padding: 10px;
-            color: #ffffff;
+            color: var(--text-color);
             transition: all 0.3s;
             border-radius: 12px;
         }
         
         .menu-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--hover-bg);
             transform: scale(1.1);
         }
         
@@ -920,18 +989,18 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
         
         ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--hover-bg);
             border-radius: 10px;
         }
         
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.6), rgba(199, 21, 133, 0.6));
+            background: var(--accent-color);
             border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--card-bg);
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.8), rgba(199, 21, 133, 0.8));
+            background: var(--accent-hover);
         }
         
         body::after {
@@ -942,9 +1011,9 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             top: 0;
             left: 0;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 25%);
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.02) 0%, transparent 25%);
             pointer-events: none;
             z-index: 0;
             animation: float 20s ease-in-out infinite;
@@ -999,6 +1068,118 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     
     <button class="fab" onclick="openAddEventModal()">+</button>
     
+    <!-- Name and Accommodations Modal -->
+    <div class="modal active" id="nameModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Welcome to Your Planner!</h2>
+            </div>
+            <form id="nameForm">
+                <div class="form-group">
+                    <label>What's your name?</label>
+                    <input type="text" id="userNameInput" required placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label>Do you have any of these accommodations? (Select all that apply)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="accommodation" value="adhd">
+                            <div class="checkbox-label">
+                                <strong>ADHD</strong>
+                                <span>Additional breaks will be scheduled to help maintain focus</span>
+                            </div>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="accommodation" value="dyslexia">
+                            <div class="checkbox-label">
+                                <strong>Dyslexia</strong>
+                                <span>Difficulty with reading, including decoding, fluency, and comprehension</span>
+                            </div>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="accommodation" value="dysgraphia">
+                            <div class="checkbox-label">
+                                <strong>Dysgraphia</strong>
+                                <span>Difficulty with writing, including handwriting, spelling, and organization</span>
+                            </div>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="accommodation" value="dyscalculia">
+                            <div class="checkbox-label">
+                                <strong>Dyscalculia</strong>
+                                <span>Difficulty with math, including number sense, calculation, and problem-solving</span>
+                            </div>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="accommodation" value="auditory">
+                            <div class="checkbox-label">
+                                <strong>Auditory Processing Disorder</strong>
+                                <span>Difficulty understanding and processing spoken language</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Next: Configure Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Initial Settings Modal -->
+    <div class="modal" id="initialSettingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Configure Your Schedule</h2>
+            </div>
+            <form id="initialSettingsForm">
+                <div class="form-group">
+                    <label>Choose Your Theme</label>
+                    <div class="gradient-picker">
+                        <div class="gradient-option g1 selected" onclick="selectGradient(1)" title="White"></div>
+                        <div class="gradient-option g2" onclick="selectGradient(2)" title="Black"></div>
+                        <div class="gradient-option g3" onclick="selectGradient(3)" title="Grey"></div>
+                        <div class="gradient-option g4" onclick="selectGradient(4)" title="Warm Pastel"></div>
+                        <div class="gradient-option g5" onclick="selectGradient(5)" title="Cool Pastel"></div>
+                        <div class="gradient-option g6" onclick="selectGradient(6)" title="Green Pastel"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Break Length (minutes)</label>
+                    <input type="number" id="initialBreakLength" value="10" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Shower Length (minutes)</label>
+                    <input type="number" id="initialShowerLength" value="15" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Meal Length (minutes)</label>
+                    <input type="number" id="initialMealLength" value="30" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Buffer Between Events (minutes)</label>
+                    <input type="number" id="initialBuffer" value="5" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Work Chunk Length (minutes)</label>
+                    <input type="number" id="initialWorkChunk" value="50" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Work Start Time</label>
+                    <input type="time" id="initialWorkStart" value="16:00">
+                </div>
+                <div class="form-group">
+                    <label>Work End Time</label>
+                    <input type="time" id="initialWorkEnd" value="22:00">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Get Started!</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Add Event Modal -->
     <div class="modal" id="addEventModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1066,6 +1247,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         </div>
     </div>
     
+    <!-- Edit Event Modal -->
     <div class="modal" id="editEventModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1135,6 +1317,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         </div>
     </div>
     
+    <!-- Settings Modal -->
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1143,13 +1326,14 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             </div>
             <form id="settingsForm">
                 <div class="form-group">
-                    <label>Background Gradient</label>
+                    <label>Background Theme</label>
                     <div class="gradient-picker">
-                        <div class="gradient-option g1 selected" onclick="selectGradient(1)"></div>
-                        <div class="gradient-option g2" onclick="selectGradient(2)"></div>
-                        <div class="gradient-option g3" onclick="selectGradient(3)"></div>
-                        <div class="gradient-option g4" onclick="selectGradient(4)"></div>
-                        <div class="gradient-option g5" onclick="selectGradient(5)"></div>
+                        <div class="gradient-option g1 selected" onclick="selectGradient(1)" title="White"></div>
+                        <div class="gradient-option g2" onclick="selectGradient(2)" title="Black"></div>
+                        <div class="gradient-option g3" onclick="selectGradient(3)" title="Grey"></div>
+                        <div class="gradient-option g4" onclick="selectGradient(4)" title="Warm Pastel"></div>
+                        <div class="gradient-option g5" onclick="selectGradient(5)" title="Cool Pastel"></div>
+                        <div class="gradient-option g6" onclick="selectGradient(6)" title="Green Pastel"></div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -1188,6 +1372,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         </div>
     </div>
     
+    <!-- Add Class Modal -->
     <div class="modal" id="addClassModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1201,32 +1386,12 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 </div>
                 <div class="form-group">
                     <label>Color (hex code)</label>
-                    <input type="text" id="classColor" value="#8a2be2" placeholder="#8a2be2">
+                    <input type="text" id="classColor" value="#3b82f6" placeholder="#3b82f6">
                 </div>
+                <div id="accommodationQuestionsContainer"></div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('addClassModal')">Cancel</button>
                     <button type="submit" class="btn btn-primary">Add Class</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <div class="modal active" id="nameModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Welcome!</h2>
-            </div>
-            <form id="nameForm">
-                <div class="form-group">
-                    <label>What's your name?</label>
-                    <input type="text" id="userNameInput" required>
-                </div>
-                <div class="form-group">
-                    <label>Do you have any accommodations? (e.g., extra time, note-taking)</label>
-                    <textarea id="accommodationsInput" rows="3" placeholder="Optional: Enter any accommodations you need..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Get Started</button>
                 </div>
             </form>
         </div>
@@ -1249,13 +1414,15 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         };
         let durationHistory = {};
         let userName = '';
-        let accommodations = '';
+        let accommodations = [];
         let currentEditingEventId = null;
+        let setupComplete = false;
         
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
-            if (userName) {
+            if (setupComplete) {
                 document.getElementById('nameModal').classList.remove('active');
+                document.getElementById('initialSettingsModal').classList.remove('active');
             }
             applyGradient(settings.selectedGradient);
             setTodayDate();
@@ -1263,29 +1430,71 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             updateClassDropdowns();
         });
         
+        // Name and accommodations form
         document.getElementById('nameForm').addEventListener('submit', (e) => {
             e.preventDefault();
             userName = document.getElementById('userNameInput').value.trim() || 'My';
-            accommodations = document.getElementById('accommodationsInput').value.trim();
+            
+            const checkboxes = document.querySelectorAll('input[name="accommodation"]:checked');
+            accommodations = Array.from(checkboxes).map(cb => cb.value);
+            
             document.getElementById('userName').textContent = userName;
             closeModal('nameModal');
-            saveData();
+            document.getElementById('initialSettingsModal').classList.add('active');
         });
         
+        // Initial settings form
+        document.getElementById('initialSettingsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            settings = {
+                breakLength: parseInt(document.getElementById('initialBreakLength').value),
+                showerLength: parseInt(document.getElementById('initialShowerLength').value),
+                mealLength: parseInt(document.getElementById('initialMealLength').value),
+                bufferBetweenEvents: parseInt(document.getElementById('initialBuffer').value),
+                workChunkLength: parseInt(document.getElementById('initialWorkChunk').value),
+                workStart: document.getElementById('initialWorkStart').value,
+                workEnd: document.getElementById('initialWorkEnd').value,
+                selectedGradient: settings.selectedGradient
+            };
+            setupComplete = true;
+            saveData();
+            closeModal('initialSettingsModal');
+            updateView();
+        });
+        
+        // Add event form
         document.getElementById('addEventForm').addEventListener('submit', (e) => {
             e.preventDefault();
+            const classTag = document.getElementById('eventClass').value || null;
+            const classInfo = classes.find(c => c.name === classTag);
+            const baseDuration = parseInt(document.getElementById('eventDuration').value);
+            
+            let adjustedDuration = baseDuration;
+            if (classInfo) {
+                if (classInfo.relatesTo.includes('writing') && accommodations.includes('dysgraphia')) {
+                    adjustedDuration = Math.round(baseDuration * 1.5);
+                }
+                if (classInfo.relatesTo.includes('math') && accommodations.includes('dyscalculia')) {
+                    adjustedDuration = Math.round(baseDuration * 1.5);
+                }
+                if (classInfo.relatesTo.includes('auditory') && accommodations.includes('auditory')) {
+                    adjustedDuration = Math.round(baseDuration * 1.5);
+                }
+            }
+            
             const event = {
                 id: Date.now(),
                 title: document.getElementById('eventTitle').value,
                 eventType: document.getElementById('eventType').value,
-                duration: parseInt(document.getElementById('eventDuration').value),
+                duration: adjustedDuration,
+                baseDuration: baseDuration,
                 priority: parseInt(document.getElementById('eventPriority').value),
                 deadline: document.getElementById('eventDeadline').value || null,
                 recurrence: document.getElementById('eventRecurrence').value,
-                classTag: document.getElementById('eventClass').value || null,
+                classTag: classTag,
                 eventDate: document.getElementById('eventDate').value,
                 startTime: document.getElementById('eventType').value === 'fixed' ? document.getElementById('eventStartTime').value : null,
-                color: getEventColor(document.getElementById('eventClass').value, parseInt(document.getElementById('eventPriority').value)),
+                color: getEventColor(classTag, parseInt(document.getElementById('eventPriority').value)),
                 estimatedDuration: null
             };
             events.push(event);
@@ -1295,23 +1504,42 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             document.getElementById('addEventForm').reset();
         });
         
+        // Edit event form
         document.getElementById('editEventForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const eventId = parseInt(document.getElementById('editEventId').value);
             const eventIndex = events.findIndex(e => e.id === eventId);
             if (eventIndex !== -1) {
+                const classTag = document.getElementById('editEventClass').value || null;
+                const classInfo = classes.find(c => c.name === classTag);
+                const baseDuration = parseInt(document.getElementById('editEventDuration').value);
+                
+                let adjustedDuration = baseDuration;
+                if (classInfo) {
+                    if (classInfo.relatesTo.includes('writing') && accommodations.includes('dysgraphia')) {
+                        adjustedDuration = Math.round(baseDuration * 1.5);
+                    }
+                    if (classInfo.relatesTo.includes('math') && accommodations.includes('dyscalculia')) {
+                        adjustedDuration = Math.round(baseDuration * 1.5);
+                    }
+                    if (classInfo.relatesTo.includes('auditory') && accommodations.includes('auditory')) {
+                        adjustedDuration = Math.round(baseDuration * 1.5);
+                    }
+                }
+                
                 events[eventIndex] = {
                     ...events[eventIndex],
                     title: document.getElementById('editEventTitle').value,
                     eventType: document.getElementById('editEventType').value,
-                    duration: parseInt(document.getElementById('editEventDuration').value),
+                    duration: adjustedDuration,
+                    baseDuration: baseDuration,
                     priority: parseInt(document.getElementById('editEventPriority').value),
                     deadline: document.getElementById('editEventDeadline').value || null,
                     recurrence: document.getElementById('editEventRecurrence').value,
-                    classTag: document.getElementById('editEventClass').value || null,
+                    classTag: classTag,
                     eventDate: document.getElementById('editEventDate').value,
                     startTime: document.getElementById('editEventType').value === 'fixed' ? document.getElementById('editEventStartTime').value : null,
-                    color: getEventColor(document.getElementById('editEventClass').value, parseInt(document.getElementById('editEventPriority').value))
+                    color: getEventColor(classTag, parseInt(document.getElementById('editEventPriority').value))
                 };
                 saveData();
                 closeModal('editEventModal');
@@ -1319,6 +1547,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             }
         });
         
+        // Settings form
         document.getElementById('settingsForm').addEventListener('submit', (e) => {
             e.preventDefault();
             settings = {
@@ -1336,12 +1565,35 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             updateView();
         });
         
+        // Add class form
         document.getElementById('addClassForm').addEventListener('submit', (e) => {
             e.preventDefault();
+            
+            const relatesTo = [];
+            if (accommodations.includes('dysgraphia')) {
+                const writingCheckbox = document.getElementById('classRelatesWriting');
+                if (writingCheckbox && writingCheckbox.checked) {
+                    relatesTo.push('writing');
+                }
+            }
+            if (accommodations.includes('dyscalculia')) {
+                const mathCheckbox = document.getElementById('classRelatesMath');
+                if (mathCheckbox && mathCheckbox.checked) {
+                    relatesTo.push('math');
+                }
+            }
+            if (accommodations.includes('auditory')) {
+                const auditoryCheckbox = document.getElementById('classRelatesAuditory');
+                if (auditoryCheckbox && auditoryCheckbox.checked) {
+                    relatesTo.push('auditory');
+                }
+            }
+            
             const newClass = {
                 id: Date.now(),
                 name: document.getElementById('className').value,
-                color: document.getElementById('classColor').value || '#8a2be2'
+                color: document.getElementById('classColor').value || '#3b82f6',
+                relatesTo: relatesTo
             };
             classes.push(newClass);
             saveData();
@@ -1355,7 +1607,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             settings.selectedGradient = num;
             applyGradient(num);
             document.querySelectorAll('.gradient-option').forEach(opt => opt.classList.remove('selected'));
-            document.querySelector('.gradient-option.g' + num).classList.add('selected');
+            document.querySelectorAll('.gradient-option.g' + num).forEach(opt => opt.classList.add('selected'));
         }
         
         function applyGradient(num) {
@@ -1377,7 +1629,57 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
         
         function openAddClassModal() {
+            showAccommodationQuestions();
             document.getElementById('addClassModal').classList.add('active');
+        }
+        
+        function showAccommodationQuestions() {
+            const container = document.getElementById('accommodationQuestionsContainer');
+            let html = '';
+            
+            if (accommodations.includes('dysgraphia')) {
+                html += `
+                    <div class="form-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="classRelatesWriting">
+                            <div class="checkbox-label">
+                                <strong>This class involves significant writing</strong>
+                                <span>Tasks will receive 1.5x time adjustment</span>
+                            </div>
+                        </label>
+                    </div>
+                `;
+            }
+            
+            if (accommodations.includes('dyscalculia')) {
+                html += `
+                    <div class="form-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="classRelatesMath">
+                            <div class="checkbox-label">
+                                <strong>This class involves math or number sense</strong>
+                                <span>Tasks will receive 1.5x time adjustment</span>
+                            </div>
+                        </label>
+                    </div>
+                `;
+            }
+            
+            if (accommodations.includes('auditory')) {
+                html += `
+                    <div class="form-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="classRelatesAuditory">
+                            <div class="checkbox-label">
+                                <strong>This class involves significant listening/lectures</strong>
+                                <span>Tasks will receive 1.5x time adjustment</span>
+                            </div>
+                        </label>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
         }
         
         function openSettings() {
@@ -1390,7 +1692,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             document.getElementById('settingsWorkEnd').value = settings.workEnd;
             
             document.querySelectorAll('.gradient-option').forEach(opt => opt.classList.remove('selected'));
-            document.querySelector('.gradient-option.g' + settings.selectedGradient).classList.add('selected');
+            document.querySelectorAll('.gradient-option.g' + settings.selectedGradient).forEach(opt => opt.classList.add('selected'));
             
             document.getElementById('settingsModal').classList.add('active');
         }
@@ -1494,8 +1796,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 const cls = classes.find(c => c.name === classTag);
                 if (cls) return cls.color;
             }
-            const colors = ['#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe'];
-            return colors[priority - 1] || '#8a2be2';
+            const colors = ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'];
+            return colors[priority - 1] || '#3b82f6';
         }
         
         function updateClassList() {
@@ -1523,7 +1825,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             document.getElementById('editEventId').value = event.id;
             document.getElementById('editEventTitle').value = event.title;
             document.getElementById('editEventType').value = event.eventType;
-            document.getElementById('editEventDuration').value = event.duration;
+            document.getElementById('editEventDuration').value = event.baseDuration || event.duration;
             document.getElementById('editEventPriority').value = event.priority;
             document.getElementById('editEventDeadline').value = event.deadline || '';
             document.getElementById('editEventRecurrence').value = event.recurrence;
@@ -1659,21 +1961,24 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                             endTime: new Date(slotEnd)
                         });
                         
-                        const breakStart = new Date(slotEnd);
-                        const breakEnd = new Date(breakStart.getTime() + settings.breakLength * 60000);
-                        if (breakEnd <= endTime) {
-                            schedule.push({
-                                id: Date.now() + Math.random(),
-                                title: 'Break',
-                                eventType: 'break',
-                                duration: settings.breakLength,
-                                startTime: breakStart,
-                                endTime: breakEnd,
-                                color: 'linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9))'
-                            });
+                        if (accommodations.includes('adhd') || accommodations.includes('dyslexia')) {
+                            const breakStart = new Date(slotEnd);
+                            const breakEnd = new Date(breakStart.getTime() + settings.breakLength * 60000);
+                            if (breakEnd <= endTime) {
+                                schedule.push({
+                                    id: Date.now() + Math.random(),
+                                    title: 'Break',
+                                    eventType: 'break',
+                                    duration: settings.breakLength,
+                                    startTime: breakStart,
+                                    endTime: breakEnd,
+                                    color: '#10b981'
+                                });
+                            }
+                            cursor = new Date(breakEnd.getTime() + settings.bufferBetweenEvents * 60000);
+                        } else {
+                            cursor = new Date(slotEnd.getTime() + settings.bufferBetweenEvents * 60000);
                         }
-                        
-                        cursor = new Date(breakEnd.getTime() + settings.bufferBetweenEvents * 60000);
                         break;
                     } else if (hasConflict) {
                         continue;
@@ -1784,7 +2089,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                         ${dayEvents.map(e => `
                             <div class="month-event" style="background: ${e.color};">${e.title}</div>
                         `).join('')}
-                        ${extraEvents > 0 ? `<div style="font-size: 10px; color: rgba(255,255,255,0.7);">+${extraEvents} more</div>` : ''}
+                        ${extraEvents > 0 ? `<div style="font-size: 10px; color: var(--text-secondary);">+${extraEvents} more</div>` : ''}
                     </div>
                 `;
             }
@@ -1811,7 +2116,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 events,
                 classes,
                 settings,
-                durationHistory
+                durationHistory,
+                setupComplete
             };
             localStorage.setItem('plannerData', JSON.stringify(data));
         }
@@ -1821,11 +2127,12 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             if (data) {
                 const parsed = JSON.parse(data);
                 userName = parsed.userName || '';
-                accommodations = parsed.accommodations || '';
+                accommodations = parsed.accommodations || [];
                 events = parsed.events || [];
                 classes = parsed.classes || [];
                 settings = parsed.settings || settings;
                 durationHistory = parsed.durationHistory || {};
+                setupComplete = parsed.setupComplete || false;
                 
                 if (userName) {
                     document.getElementById('userName').textContent = userName;
