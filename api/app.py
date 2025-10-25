@@ -2,7 +2,7 @@ from flask import Flask, render_template_string
 import os
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', '')
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
 
 HTML_TEMPLATE = '''<!DOCTYPE html>
 <html lang="en">
@@ -1652,10 +1652,38 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     <label>Name</label>
                     <input type="text" id="className" required>
                 </div>
+                
                 <div class="form-group">
-                    <label>Color (hex code)</label>
-                    <input type="text" id="classColor" value="#3b82f6" placeholder="#3b82f6">
+                    <label>Color</label>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Choose from presets, pick from gradient, or enter a hex code:</p>
+                    
+                    <div class="preset-colors">
+                        <div class="preset-color" style="background: #ef4444;" onclick="selectClassPresetColor('#ef4444', event)"></div>
+                        <div class="preset-color" style="background: #f97316;" onclick="selectClassPresetColor('#f97316', event)"></div>
+                        <div class="preset-color" style="background: #f59e0b;" onclick="selectClassPresetColor('#f59e0b', event)"></div>
+                        <div class="preset-color" style="background: #eab308;" onclick="selectClassPresetColor('#eab308', event)"></div>
+                        <div class="preset-color" style="background: #84cc16;" onclick="selectClassPresetColor('#84cc16', event)"></div>
+                        <div class="preset-color" style="background: #22c55e;" onclick="selectClassPresetColor('#22c55e', event)"></div>
+                        <div class="preset-color" style="background: #10b981;" onclick="selectClassPresetColor('#10b981', event)"></div>
+                        <div class="preset-color" style="background: #14b8a6;" onclick="selectClassPresetColor('#14b8a6', event)"></div>
+                        <div class="preset-color" style="background: #06b6d4;" onclick="selectClassPresetColor('#06b6d4', event)"></div>
+                        <div class="preset-color" style="background: #0ea5e9;" onclick="selectClassPresetColor('#0ea5e9', event)"></div>
+                        <div class="preset-color" style="background: #3b82f6;" onclick="selectClassPresetColor('#3b82f6', event)"></div>
+                        <div class="preset-color" style="background: #6366f1;" onclick="selectClassPresetColor('#6366f1', event)"></div>
+                        <div class="preset-color" style="background: #8b5cf6;" onclick="selectClassPresetColor('#8b5cf6', event)"></div>
+                        <div class="preset-color" style="background: #a855f7;" onclick="selectClassPresetColor('#a855f7', event)"></div>
+                        <div class="preset-color" style="background: #d946ef;" onclick="selectClassPresetColor('#d946ef', event)"></div>
+                        <div class="preset-color" style="background: #ec4899;" onclick="selectClassPresetColor('#ec4899', event)"></div>
+                    </div>
+                    
+                    <div class="gradient-color-picker" id="classGradientPicker"></div>
+                    
+                    <div class="hex-input-container">
+                        <div class="color-preview" id="classColorPreview" style="background: #3b82f6;"></div>
+                        <input type="text" id="classColor" value="#3b82f6" placeholder="#3b82f6" style="flex: 1;">
+                    </div>
                 </div>
+                
                 <div id="accommodationQuestionsContainer"></div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('addClassModal')">Cancel</button>
