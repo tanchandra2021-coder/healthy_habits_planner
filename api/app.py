@@ -2,7 +2,7 @@ from flask import Flask, render_template_string
 import os
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', AIzaSyA_AjHXMJSj7lm4XmxiITqCIZ9-kP7tsXw')
+app.secret_key = os.environ.get('SECRET_KEY', '')
 
 HTML_TEMPLATE = '''<!DOCTYPE html>
 <html lang="en">
@@ -122,7 +122,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             --btn-text: #ffffff;
         }
         
-        /* Purple theme */
+        /* Purple pastel theme */
         body.gradient-7 {
             --gradient-bg: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%);
             --text-color: #1f2937;
@@ -136,7 +136,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             --btn-text: #ffffff;
         }
         
-        /* Pink theme */
+        /* Pink pastel theme */
         body.gradient-8 {
             --gradient-bg: linear-gradient(135deg, #fef1f7 0%, #fce7f3 50%, #fbcfe8 100%);
             --text-color: #1f2937;
@@ -482,7 +482,6 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         
         .event-card.break {
             background: #10b981;
-            cursor: default;
         }
         
         .modal {
@@ -790,68 +789,9 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             transform: scale(1.1);
         }
         
-        .gradient-picker {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
+        /* ENHANCED COLOR PICKER */
+        .color-picker-enhanced {
             margin-top: 12px;
-        }
-        
-        .gradient-option {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            cursor: pointer;
-            border: 3px solid transparent;
-            transition: all 0.3s;
-        }
-        
-        .gradient-option:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        }
-        
-        .gradient-option.selected {
-            border-color: var(--accent-color);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-        }
-        
-        .gradient-option.g1 {
-            background: #ffffff;
-            border: 2px solid #e5e7eb;
-        }
-        
-        .gradient-option.g2 {
-            background: #000000;
-        }
-        
-        .gradient-option.g3 {
-            background: #6b7280;
-        }
-        
-        .gradient-option.g4 {
-            background: linear-gradient(135deg, #fef3f2, #fff7ed);
-        }
-        
-        .gradient-option.g5 {
-            background: linear-gradient(135deg, #f0f9ff, #dbeafe);
-        }
-        
-        .gradient-option.g6 {
-            background: linear-gradient(135deg, #f0fdf4, #d1fae5);
-        }
-        
-        .gradient-option.g7 {
-            background: linear-gradient(135deg, #faf5ff, #e9d5ff);
-        }
-        
-        .gradient-option.g8 {
-            background: linear-gradient(135deg, #fef1f7, #fbcfe8);
-        }
-        
-        /* COLOR PICKER ENHANCEMENTS */
-        .color-picker-section {
-            margin-bottom: 24px;
         }
         
         .preset-colors {
@@ -933,6 +873,65 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             border-radius: 10px;
             border: 2px solid var(--card-border);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gradient-picker {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        
+        .gradient-option {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .gradient-option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gradient-option.selected {
+            border-color: var(--accent-color);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        
+        .gradient-option.g1 {
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .gradient-option.g2 {
+            background: #000000;
+        }
+        
+        .gradient-option.g3 {
+            background: #6b7280;
+        }
+        
+        .gradient-option.g4 {
+            background: linear-gradient(135deg, #fef3f2, #fff7ed);
+        }
+        
+        .gradient-option.g5 {
+            background: linear-gradient(135deg, #f0f9ff, #dbeafe);
+        }
+        
+        .gradient-option.g6 {
+            background: linear-gradient(135deg, #f0fdf4, #d1fae5);
+        }
+        
+        .gradient-option.g7 {
+            background: linear-gradient(135deg, #faf5ff, #e9d5ff);
+        }
+        
+        .gradient-option.g8 {
+            background: linear-gradient(135deg, #fef1f7, #fbcfe8);
         }
         
         .monthly-grid {
@@ -1056,7 +1055,6 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
         
-        /* AI TEACHER BUTTON */
         .ai-fab {
             position: fixed;
             bottom: 30px;
@@ -1468,7 +1466,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 </div>
                 <div class="form-group">
                     <label>Duration (minutes)</label>
-                    <input type="number" id="eventDuration" value="30" min="1" required>
+                    <input type="number" id="eventDuration" value="30" min="1">
                 </div>
                 <div class="form-group">
                     <label>Priority (1=highest, 5=lowest)</label>
@@ -1507,39 +1505,6 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     <label>Start Time (for fixed events)</label>
                     <input type="time" id="eventStartTime">
                 </div>
-                
-                <!-- COLOR PICKER WITH ENHANCEMENTS -->
-                <div class="form-group color-picker-section">
-                    <label>Color</label>
-                    <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Choose from presets, pick from gradient, or enter a hex code:</p>
-                    
-                    <div class="preset-colors">
-                        <div class="preset-color" style="background: #ef4444;" onclick="selectEventColor('#ef4444', event)"></div>
-                        <div class="preset-color" style="background: #f97316;" onclick="selectEventColor('#f97316', event)"></div>
-                        <div class="preset-color" style="background: #f59e0b;" onclick="selectEventColor('#f59e0b', event)"></div>
-                        <div class="preset-color" style="background: #eab308;" onclick="selectEventColor('#eab308', event)"></div>
-                        <div class="preset-color" style="background: #84cc16;" onclick="selectEventColor('#84cc16', event)"></div>
-                        <div class="preset-color" style="background: #22c55e;" onclick="selectEventColor('#22c55e', event)"></div>
-                        <div class="preset-color" style="background: #10b981;" onclick="selectEventColor('#10b981', event)"></div>
-                        <div class="preset-color" style="background: #14b8a6;" onclick="selectEventColor('#14b8a6', event)"></div>
-                        <div class="preset-color" style="background: #06b6d4;" onclick="selectEventColor('#06b6d4', event)"></div>
-                        <div class="preset-color" style="background: #0ea5e9;" onclick="selectEventColor('#0ea5e9', event)"></div>
-                        <div class="preset-color" style="background: #3b82f6;" onclick="selectEventColor('#3b82f6', event)"></div>
-                        <div class="preset-color" style="background: #6366f1;" onclick="selectEventColor('#6366f1', event)"></div>
-                        <div class="preset-color" style="background: #8b5cf6;" onclick="selectEventColor('#8b5cf6', event)"></div>
-                        <div class="preset-color" style="background: #a855f7;" onclick="selectEventColor('#a855f7', event)"></div>
-                        <div class="preset-color" style="background: #d946ef;" onclick="selectEventColor('#d946ef', event)"></div>
-                        <div class="preset-color" style="background: #ec4899;" onclick="selectEventColor('#ec4899', event)"></div>
-                    </div>
-                    
-                    <div class="gradient-color-picker" id="gradientColorPicker"></div>
-                    
-                    <div class="hex-input-container">
-                        <div class="color-preview" id="eventColorPreview" style="background: #3b82f6;"></div>
-                        <input type="text" id="eventColorHex" placeholder="#3b82f6" maxlength="7" style="flex: 1;">
-                    </div>
-                </div>
-                
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('addEventModal')">Cancel</button>
                     <button type="submit" class="btn btn-primary">Add Event</button>
@@ -1609,37 +1574,6 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     <label>Start Time (for fixed events)</label>
                     <input type="time" id="editEventStartTime">
                 </div>
-                
-                <!-- COLOR PICKER FOR EDIT -->
-                <div class="form-group color-picker-section">
-                    <label>Color</label>
-                    <div class="preset-colors">
-                        <div class="preset-color" style="background: #ef4444;" onclick="selectEditEventColor('#ef4444', event)"></div>
-                        <div class="preset-color" style="background: #f97316;" onclick="selectEditEventColor('#f97316', event)"></div>
-                        <div class="preset-color" style="background: #f59e0b;" onclick="selectEditEventColor('#f59e0b', event)"></div>
-                        <div class="preset-color" style="background: #eab308;" onclick="selectEditEventColor('#eab308', event)"></div>
-                        <div class="preset-color" style="background: #84cc16;" onclick="selectEditEventColor('#84cc16', event)"></div>
-                        <div class="preset-color" style="background: #22c55e;" onclick="selectEditEventColor('#22c55e', event)"></div>
-                        <div class="preset-color" style="background: #10b981;" onclick="selectEditEventColor('#10b981', event)"></div>
-                        <div class="preset-color" style="background: #14b8a6;" onclick="selectEditEventColor('#14b8a6', event)"></div>
-                        <div class="preset-color" style="background: #06b6d4;" onclick="selectEditEventColor('#06b6d4', event)"></div>
-                        <div class="preset-color" style="background: #0ea5e9;" onclick="selectEditEventColor('#0ea5e9', event)"></div>
-                        <div class="preset-color" style="background: #3b82f6;" onclick="selectEditEventColor('#3b82f6', event)"></div>
-                        <div class="preset-color" style="background: #6366f1;" onclick="selectEditEventColor('#6366f1', event)"></div>
-                        <div class="preset-color" style="background: #8b5cf6;" onclick="selectEditEventColor('#8b5cf6', event)"></div>
-                        <div class="preset-color" style="background: #a855f7;" onclick="selectEditEventColor('#a855f7', event)"></div>
-                        <div class="preset-color" style="background: #d946ef;" onclick="selectEditEventColor('#d946ef', event)"></div>
-                        <div class="preset-color" style="background: #ec4899;" onclick="selectEditEventColor('#ec4899', event)"></div>
-                    </div>
-                    
-                    <div class="gradient-color-picker" id="editGradientColorPicker"></div>
-                    
-                    <div class="hex-input-container">
-                        <div class="color-preview" id="editEventColorPreview" style="background: #3b82f6;"></div>
-                        <input type="text" id="editEventColorHex" placeholder="#3b82f6" maxlength="7" style="flex: 1;">
-                    </div>
-                </div>
-                
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="deleteEvent()">Delete</button>
                     <button type="button" class="btn btn-secondary" onclick="closeModal('editEventModal')">Cancel</button>
@@ -1718,37 +1652,10 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     <label>Name</label>
                     <input type="text" id="className" required>
                 </div>
-                
-                <!-- CLASS COLOR PICKER -->
-                <div class="form-group color-picker-section">
-                    <label>Color</label>
-                    <div class="preset-colors">
-                        <div class="preset-color" style="background: #ef4444;" onclick="selectClassColor('#ef4444', event)"></div>
-                        <div class="preset-color" style="background: #f97316;" onclick="selectClassColor('#f97316', event)"></div>
-                        <div class="preset-color" style="background: #f59e0b;" onclick="selectClassColor('#f59e0b', event)"></div>
-                        <div class="preset-color" style="background: #eab308;" onclick="selectClassColor('#eab308', event)"></div>
-                        <div class="preset-color" style="background: #84cc16;" onclick="selectClassColor('#84cc16', event)"></div>
-                        <div class="preset-color" style="background: #22c55e;" onclick="selectClassColor('#22c55e', event)"></div>
-                        <div class="preset-color" style="background: #10b981;" onclick="selectClassColor('#10b981', event)"></div>
-                        <div class="preset-color" style="background: #14b8a6;" onclick="selectClassColor('#14b8a6', event)"></div>
-                        <div class="preset-color" style="background: #06b6d4;" onclick="selectClassColor('#06b6d4', event)"></div>
-                        <div class="preset-color" style="background: #0ea5e9;" onclick="selectClassColor('#0ea5e9', event)"></div>
-                        <div class="preset-color" style="background: #3b82f6;" onclick="selectClassColor('#3b82f6', event)"></div>
-                        <div class="preset-color" style="background: #6366f1;" onclick="selectClassColor('#6366f1', event)"></div>
-                        <div class="preset-color" style="background: #8b5cf6;" onclick="selectClassColor('#8b5cf6', event)"></div>
-                        <div class="preset-color" style="background: #a855f7;" onclick="selectClassColor('#a855f7', event)"></div>
-                        <div class="preset-color" style="background: #d946ef;" onclick="selectClassColor('#d946ef', event)"></div>
-                        <div class="preset-color" style="background: #ec4899;" onclick="selectClassColor('#ec4899', event)"></div>
-                    </div>
-                    
-                    <div class="gradient-color-picker" id="classGradientColorPicker"></div>
-                    
-                    <div class="hex-input-container">
-                        <div class="color-preview" id="classColorPreview" style="background: #3b82f6;"></div>
-                        <input type="text" id="classColor" placeholder="#3b82f6" maxlength="7" style="flex: 1;">
-                    </div>
+                <div class="form-group">
+                    <label>Color (hex code)</label>
+                    <input type="text" id="classColor" value="#3b82f6" placeholder="#3b82f6">
                 </div>
-                
                 <div id="accommodationQuestionsContainer"></div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('addClassModal')">Cancel</button>
@@ -1800,8 +1707,6 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         let accommodations = [];
         let currentEditingEventId = null;
         let setupComplete = false;
-        let selectedEventColor = '#3b82f6';
-        let selectedClassColor = '#3b82f6';
         
         const GEMINI_API_KEY = 'AIzaSyA_AjHXMJSj7lm4XmxiITqCIZ9-kP7tsXw';
         
@@ -1815,115 +1720,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             setTodayDate();
             updateView();
             updateClassDropdowns();
-            setupGradientColorPickers();
-            setupHexInputListeners();
         });
-        
-        // GRADIENT COLOR PICKER SETUP
-        function setupGradientColorPickers() {
-            setupGradientPicker('gradientColorPicker', (color) => {
-                selectedEventColor = color;
-                document.getElementById('eventColorHex').value = color;
-                document.getElementById('eventColorPreview').style.background = color;
-            });
-            
-            setupGradientPicker('editGradientColorPicker', (color) => {
-                document.getElementById('editEventColorHex').value = color;
-                document.getElementById('editEventColorPreview').style.background = color;
-            });
-            
-            setupGradientPicker('classGradientColorPicker', (color) => {
-                selectedClassColor = color;
-                document.getElementById('classColor').value = color;
-                document.getElementById('classColorPreview').style.background = color;
-            });
-        }
-        
-        function setupGradientPicker(id, callback) {
-            const picker = document.getElementById(id);
-            if (!picker) return;
-            
-            picker.addEventListener('click', (e) => {
-                const rect = picker.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const percentage = x / rect.width;
-                
-                const colors = [
-                    '#ef4444', '#f59e0b', '#eab308', '#84cc16', '#22c55e', 
-                    '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6', 
-                    '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e'
-                ];
-                
-                const index = Math.floor(percentage * (colors.length - 1));
-                const color = colors[Math.max(0, Math.min(index, colors.length - 1))];
-                
-                callback(color);
-            });
-        }
-        
-        function setupHexInputListeners() {
-            const eventHex = document.getElementById('eventColorHex');
-            if (eventHex) {
-                eventHex.addEventListener('input', (e) => {
-                    const value = e.target.value;
-                    if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
-                        selectedEventColor = value;
-                        document.getElementById('eventColorPreview').style.background = value;
-                    }
-                });
-            }
-            
-            const editHex = document.getElementById('editEventColorHex');
-            if (editHex) {
-                editHex.addEventListener('input', (e) => {
-                    const value = e.target.value;
-                    if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
-                        document.getElementById('editEventColorPreview').style.background = value;
-                    }
-                });
-            }
-            
-            const classHex = document.getElementById('classColor');
-            if (classHex) {
-                classHex.addEventListener('input', (e) => {
-                    const value = e.target.value;
-                    if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
-                        selectedClassColor = value;
-                        document.getElementById('classColorPreview').style.background = value;
-                    }
-                });
-            }
-        }
-        
-        function selectEventColor(color, event) {
-            event.stopPropagation();
-            selectedEventColor = color;
-            document.getElementById('eventColorHex').value = color;
-            document.getElementById('eventColorPreview').style.background = color;
-            
-            // Update visual selection
-            document.querySelectorAll('#addEventModal .preset-color').forEach(el => el.classList.remove('selected'));
-            event.target.classList.add('selected');
-        }
-        
-        function selectEditEventColor(color, event) {
-            event.stopPropagation();
-            document.getElementById('editEventColorHex').value = color;
-            document.getElementById('editEventColorPreview').style.background = color;
-            
-            document.querySelectorAll('#editEventModal .preset-color').forEach(el => el.classList.remove('selected'));
-            event.target.classList.add('selected');
-        }
-        
-        function selectClassColor(color, event) {
-            event.stopPropagation();
-            selectedClassColor = color;
-            document.getElementById('classColor').value = color;
-            document.getElementById('classColorPreview').style.background = color;
-            
-            document.querySelectorAll('#addClassModal .preset-color').forEach(el => el.classList.remove('selected'));
-            event.target.classList.add('selected');
-        }
         
         // Name and accommodations form
         document.getElementById('nameForm').addEventListener('submit', (e) => {
@@ -1977,23 +1774,19 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 }
             }
             
-            const eventDate = document.getElementById('eventDate').value;
-            const eventType = document.getElementById('eventType').value;
-            const color = document.getElementById('eventColorHex').value || selectedEventColor || '#3b82f6';
-            
             const event = {
                 id: Date.now(),
                 title: document.getElementById('eventTitle').value,
-                eventType: eventType,
+                eventType: document.getElementById('eventType').value,
                 duration: adjustedDuration,
                 baseDuration: baseDuration,
                 priority: parseInt(document.getElementById('eventPriority').value),
                 deadline: document.getElementById('eventDeadline').value || null,
                 recurrence: document.getElementById('eventRecurrence').value,
                 classTag: classTag,
-                eventDate: eventDate,
-                startTime: eventType === 'fixed' ? document.getElementById('eventStartTime').value : null,
-                color: color,
+                eventDate: document.getElementById('eventDate').value,
+                startTime: document.getElementById('eventType').value === 'fixed' ? document.getElementById('eventStartTime').value : null,
+                color: getEventColor(classTag, parseInt(document.getElementById('eventPriority').value)),
                 estimatedDuration: null
             };
             events.push(event);
@@ -2001,8 +1794,6 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             closeModal('addEventModal');
             updateView();
             document.getElementById('addEventForm').reset();
-            selectedEventColor = '#3b82f6';
-            document.getElementById('eventColorPreview').style.background = '#3b82f6';
         });
         
         // Edit event form
@@ -2028,13 +1819,10 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     }
                 }
                 
-                const eventType = document.getElementById('editEventType').value;
-                const color = document.getElementById('editEventColorHex').value || '#3b82f6';
-                
                 events[eventIndex] = {
                     ...events[eventIndex],
                     title: document.getElementById('editEventTitle').value,
-                    eventType: eventType,
+                    eventType: document.getElementById('editEventType').value,
                     duration: adjustedDuration,
                     baseDuration: baseDuration,
                     priority: parseInt(document.getElementById('editEventPriority').value),
@@ -2042,8 +1830,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     recurrence: document.getElementById('editEventRecurrence').value,
                     classTag: classTag,
                     eventDate: document.getElementById('editEventDate').value,
-                    startTime: eventType === 'fixed' ? document.getElementById('editEventStartTime').value : null,
-                    color: color
+                    startTime: document.getElementById('editEventType').value === 'fixed' ? document.getElementById('editEventStartTime').value : null,
+                    color: getEventColor(classTag, parseInt(document.getElementById('editEventPriority').value))
                 };
                 saveData();
                 closeModal('editEventModal');
@@ -2093,12 +1881,10 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 }
             }
             
-            const color = document.getElementById('classColor').value || selectedClassColor || '#3b82f6';
-            
             const newClass = {
                 id: Date.now(),
                 name: document.getElementById('className').value,
-                color: color,
+                color: document.getElementById('classColor').value || '#3b82f6',
                 relatesTo: relatesTo
             };
             classes.push(newClass);
@@ -2107,8 +1893,6 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             updateClassList();
             updateClassDropdowns();
             document.getElementById('addClassForm').reset();
-            selectedClassColor = '#3b82f6';
-            document.getElementById('classColorPreview').style.background = '#3b82f6';
         });
         
         function selectGradient(num) {
@@ -2132,17 +1916,11 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         
         function openAddEventModal() {
             setTodayDate();
-            selectedEventColor = '#3b82f6';
-            document.getElementById('eventColorHex').value = '#3b82f6';
-            document.getElementById('eventColorPreview').style.background = '#3b82f6';
             closeModal('editEventModal');
             document.getElementById('addEventModal').classList.add('active');
         }
         
         function openAddClassModal() {
-            selectedClassColor = '#3b82f6';
-            document.getElementById('classColor').value = '#3b82f6';
-            document.getElementById('classColorPreview').style.background = '#3b82f6';
             showAccommodationQuestions();
             document.getElementById('addClassModal').classList.add('active');
         }
@@ -2351,8 +2129,6 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             document.getElementById('editEventClass').value = event.classTag || '';
             document.getElementById('editEventDate').value = event.eventDate;
             document.getElementById('editEventStartTime').value = event.startTime || '';
-            document.getElementById('editEventColorHex').value = event.color || '#3b82f6';
-            document.getElementById('editEventColorPreview').style.background = event.color || '#3b82f6';
             toggleEditFixedFields();
             document.getElementById('editEventModal').classList.add('active');
         }
@@ -2385,7 +2161,6 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             return false;
         }
         
-        // PRIORITY ALGORITHM (Step 1, 2, 3 from original)
         function autoPrioritize(tasks, day) {
             const now = new Date();
             tasks.forEach(task => {
@@ -2396,7 +2171,6 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     
                     let suggested = task.priority;
                     
-                    // Step 1: Adjust priority based on deadline proximity
                     if (minutesLeft <= 0) {
                         suggested = Math.max(1, suggested - 2);
                     } else if (minutesLeft <= 24 * 60) {
@@ -2405,12 +2179,10 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                         suggested = Math.max(1, suggested - 0);
                     }
                     
-                    // Step 2: Further adjust for long tasks with approaching deadlines
                     if (estimate >= 120 && minutesLeft <= 3 * 24 * 60) {
                         suggested = Math.max(1, suggested - 1);
                     }
                     
-                    // Step 3: Apply the adjusted priority
                     task.priority = suggested;
                 }
             });
